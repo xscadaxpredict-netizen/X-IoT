@@ -85,6 +85,8 @@ typedef struct {
 } tag_config_t;
 
 /* API */
+sys_status_t tag_registry_init(uint16_t capacity);
+sys_status_t tag_registry_add(const tag_config_t* tag);
 const tag_config_t* tag_find_by_id(uint16_t tagId);
 const tag_config_t* tag_find_by_name(const char* name);
 const tag_config_t* tag_find_by_topic(const char* topic);

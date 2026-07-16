@@ -14,6 +14,11 @@ sys_status_t tag_runtime_init(){
     return SYS_ERR_INVALID_STATE;
   }
 
+  if(tag_count() == 0){
+    LOG_ERROR(MODULE, "No active tags found in registry. Aborting runtime initialization.");
+    return SYS_ERR_INVALID_STATE; // Fails startup cleanly
+  }
+
   LOG_INFO(MODULE, "Intializing...");
   gTagRuntime = (tag_runtime_t*)calloc(tag_count(), sizeof(tag_runtime_t));
   if(gTagRuntime == NULL){
