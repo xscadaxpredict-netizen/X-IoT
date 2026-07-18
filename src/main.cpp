@@ -17,52 +17,8 @@
 #include "nextion_service.h"
 #include "config_service.h"
 
-#define FIRMWARE_VERSION 2.1.0"
-
+#define FIRMWARE_VERSION "2.0.0"
 #define MODULE "APP"
-
-// const mqtt_config_t mqttConfig = {
-//   .broker = "www.xpredictautomation.com", // domain name or IP address of the MQTT broker
-//   .port = 1883, // non-secure port for MQTT
-//   .username = "tworks_controller", // username for MQTT authentication, mandatory
-//   .password = "Xplbs@123", // password for MQTT authentication, mandatory
-//   .clientId = "tworks_controller", // unique client ID for this device, mandatory
-//   .secure = false, // changes, not required
-//   .cleanSession = false, // changes, not required
-//   .autoReconnect = true, // changes, not required
-//   .keepAlive = 120, // changes, not required
-// };
-
-// static const app_wifi_config_t wifiConfig = {
-//   .ssid = "Xpredict_Digital", // SSID for WiFi connection, mandatory
-//   .password = "Xplbs@123", // password for WiFi connection, mandatory
-//   .autoReconnect = true, // changes, not required
-//   .reconnectTimeoutMs = 20000, // changes, not required
-//   .mode = WIFI_STA // changes, not required
-// };
-
-// static const modbus_config_t modbusConfig = {
-//   .baudrate = 9600,  // use your modbus slave device baud rate
-//   .serialConfig = SERIAL_8N1, // use your modbus slave device serial configuration
-//   .txPin = 17, // use your modbus slave device TX pin
-//   .rxPin = 18, // use your modbus slave device RX pin
-//   .timeoutMs = 2000 // changes, not required
-// };
-
-// static const acquisition_config_t acqConfig = {
-//   .scanIntervalMs = 25000
-// };
-
-// static const publisher_config_t publisherConfig = {
-//   .publishIntervalMs = 50000,
-// };
-
-// static const nextion_config_t nextionConfig = {
-//   .rxPin = 1,
-//   .txPin = 2,
-//   .baudrate = 9600,
-//   .intervalMs = 60000
-// };
 
 /**
  * @brief Handles critical system-level initialization and execution errors.
