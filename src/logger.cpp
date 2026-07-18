@@ -13,11 +13,10 @@ sys_status_t logger_init(void){
   } 
 
   Serial.begin(115200);
-  // while (!Serial) {}
-  Serial.println("[INFO] [LOGGER] __ OK __");
+  while (!Serial) {}
 
   Serial.println("[INFO] [LOGGER] Initializing...");
-
+  
   gLoggerMutex = xSemaphoreCreateMutex();
   if (gLoggerMutex == NULL) {
     Serial.println("[ERROR] [LOGGER] logger mutex create unsuccess");

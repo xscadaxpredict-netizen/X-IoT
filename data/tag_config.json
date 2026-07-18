@@ -1,0 +1,100 @@
+[
+  {
+    "tagId": 2,
+    "name": "MODE-YT",
+    "unit": "Status",
+    "topic": "XP/TW-01/MODE-YT-100",
+    "topicType": "PUBLISH",
+    "source": "MODBUS",
+    "access": "READ_ONLY",
+    "dataType": "TAG_BOOL",
+    "valueDataType": "TAG_STRING",
+    "boolMap": {
+      "falseVal": "AUTO",
+      "trueVal": "MANUAL"
+    },
+    "nxtComponent": "t18",
+    "modbus": {
+      "slaveId": 2,
+      "address": 12,
+      "quantity": 1,
+      "functionCode": 1,
+      "wordOrder": "WORD_CDAB"
+    }
+  },
+  {
+    "tagId": 4,
+    "name": "RSP-YT",
+    "unit": "Status",
+    "topic": "XP/TW-01/RSP-YT-101",
+    "topicType": "PUBLISH",
+    "source": "MODBUS",
+    "access": "READ_ONLY",
+    "dataType": "TAG_BOOL",
+    "valueDataType": "TAG_STRING",
+    "boolMap": {
+      "falseVal": "OFF",
+      "trueVal": "ON"
+    },
+    "nxtComponent": "t11",
+    "modbus": {
+      "slaveId": 2,
+      "address": 13,
+      "quantity": 1,
+      "functionCode": 1,
+      "wordOrder": "WORD_CDAB"
+    }
+  },
+  {
+    "tagId": 34,
+    "name": "MACH-IT",
+    "unit": "A",
+    "topic": "XP/TW-01/MACH-IT-108",
+    "topicType": "PUBLISH",
+    "source": "MODBUS",
+    "access": "READ_ONLY",
+    "dataType": "TAG_UINT16",
+    "valueDataType": "TAG_FLOAT32",
+    "multiplier": 0.01,
+    "offset": 0.0,
+    "nxtComponent": "t19",
+    "modbus": {
+      "slaveId": 3,
+      "address": 0,
+      "quantity": 1,
+      "functionCode": 4,
+      "wordOrder": "WORD_CDAB"
+    }
+  },
+  {
+    "tagId": 40,
+    "name": "PROC-01-YT",
+    "unit": "Status",
+    "topic": "XP/TW-01/PROC-01-YT-112",
+    "topicType": "PUBLISH",
+    "source": "MODBUS",
+    "access": "READ_ONLY",
+    "dataType": "TAG_UINT16",
+    "valueDataType": "TAG_STRING",
+    "nxtComponent": null,
+    "enumMap": [
+      { "val": 100, "name": "IDLE" },
+      { "val": 101, "name": "FILL_TANK" },
+      { "val": 102, "name": "EC_PROCESS" },
+      { "val": 103, "name": "STIRRER_PROCESS" },
+      { "val": 104, "name": "STAGNATION" },
+      { "val": 105, "name": "VALVE_OPEN" },
+      { "val": 106, "name": "WAIT_DRAIN" },
+      { "val": 107, "name": "VALVE_CLOSE" },
+      { "val": 108, "name": "DSP_PROCESS" },
+      { "val": 109, "name": "NEXT_PROCESS" }
+    ],
+    "modbus": {
+      "slaveId": 2,
+      "address": 0,
+      "quantity": 1,
+      "functionCode": 3,
+      "wordOrder": "WORD_CDAB"
+    }
+  }
+]

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "logger.h"
 
+#define MODULE "TAG_REGISTRY"
+
 static tag_config_t* gTags = NULL;
 static uint16_t gCapacity = 0;
 static uint16_t gTagCount = 0;

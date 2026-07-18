@@ -2,6 +2,7 @@
 #define TAG_REGISTRY_H
 
 #include <Arduino.h>
+#include <system_err.h>
 
 typedef enum {
   WORD_ABCD = 10,

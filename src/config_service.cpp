@@ -68,9 +68,9 @@ static tag_type_t parse_tag_type(const char* typeStr) {
 }
 
 static sys_status_t load_system_config() {
-  File file = LittleFS.open("/config.json", "r");
+  File file = LittleFS.open("/system_config.json", "r");
   if (!file) {
-    LOG_ERROR(MODULE, "Failed to open /config.json");
+    LOG_ERROR(MODULE, "Failed to open /system_config.json");
     return SYS_ERR_FAIL;
   }
 
@@ -79,7 +79,7 @@ static sys_status_t load_system_config() {
   file.close();
 
   if (error) {
-    LOG_ERROR(MODULE, "Failed to parse /config.json: %s", error.c_str());
+    LOG_ERROR(MODULE, "Failed to parse /system_config.json: %s", error.c_str());
     return SYS_ERR_FAIL;
   }
 
@@ -122,16 +122,16 @@ static sys_status_t load_system_config() {
   gNxtConfig.rxPin = nxt["rxPin"] | 1;
   gNxtConfig.txPin = nxt["txPin"] | 2;
   gNxtConfig.baudrate = nxt["baudrate"] | 9600;
-  gNxtConfig.updateIntervalMs = nxt["updateIntervalMs"] | 2000;
+  gNxtConfig.intervalMs = nxt["intervalMs"] | 2000;
 
   LOG_INFO(MODULE, "System configurations loaded successfully");
   return SYS_OK;
 }
 
 static sys_status_t load_tags_config() {
-  File file = LittleFS.open("/tags.json", "r");
+  File file = LittleFS.open("/tag_config.json", "r");
   if (!file) {
-    LOG_ERROR(MODULE, "Failed to open /tags.json");
+    LOG_ERROR(MODULE, "Failed to open /tag_config.json");
     return SYS_ERR_FAIL;
   }
 
@@ -140,7 +140,7 @@ static sys_status_t load_tags_config() {
   file.close();
 
   if (error) {
-    LOG_ERROR(MODULE, "Failed to parse /tags.json: %s", error.c_str());
+    LOG_ERROR(MODULE, "Failed to parse /tag_config.json: %s", error.c_str());
     return SYS_ERR_FAIL;
   }
 

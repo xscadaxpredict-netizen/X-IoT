@@ -15,51 +15,54 @@
 #include "subscriber.h"
 #include "alert_service.h"
 #include "nextion_service.h"
+#include "config_service.h"
+
+#define FIRMWARE_VERSION 2.1.0"
 
 #define MODULE "APP"
 
-const mqtt_config_t mqttConfig = {
-  .broker = "www.xpredictautomation.com", // domain name or IP address of the MQTT broker
-  .port = 1883, // non-secure port for MQTT
-  .username = "tworks_controller", // username for MQTT authentication, mandatory
-  .password = "Xplbs@123", // password for MQTT authentication, mandatory
-  .clientId = "tworks_controller", // unique client ID for this device, mandatory
-  .secure = false, // changes, not required
-  .cleanSession = false, // changes, not required
-  .autoReconnect = true, // changes, not required
-  .keepAlive = 120, // changes, not required
-};
+// const mqtt_config_t mqttConfig = {
+//   .broker = "www.xpredictautomation.com", // domain name or IP address of the MQTT broker
+//   .port = 1883, // non-secure port for MQTT
+//   .username = "tworks_controller", // username for MQTT authentication, mandatory
+//   .password = "Xplbs@123", // password for MQTT authentication, mandatory
+//   .clientId = "tworks_controller", // unique client ID for this device, mandatory
+//   .secure = false, // changes, not required
+//   .cleanSession = false, // changes, not required
+//   .autoReconnect = true, // changes, not required
+//   .keepAlive = 120, // changes, not required
+// };
 
-static const app_wifi_config_t wifiConfig = {
-  .ssid = "Xpredict_Digital", // SSID for WiFi connection, mandatory
-  .password = "Xplbs@123", // password for WiFi connection, mandatory
-  .autoReconnect = true, // changes, not required
-  .reconnectTimeoutMs = 20000, // changes, not required
-  .mode = WIFI_STA // changes, not required
-};
+// static const app_wifi_config_t wifiConfig = {
+//   .ssid = "Xpredict_Digital", // SSID for WiFi connection, mandatory
+//   .password = "Xplbs@123", // password for WiFi connection, mandatory
+//   .autoReconnect = true, // changes, not required
+//   .reconnectTimeoutMs = 20000, // changes, not required
+//   .mode = WIFI_STA // changes, not required
+// };
 
-static const modbus_config_t modbusConfig = {
-  .baudrate = 9600,  // use your modbus slave device baud rate
-  .serialConfig = SERIAL_8N1, // use your modbus slave device serial configuration
-  .txPin = 17, // use your modbus slave device TX pin
-  .rxPin = 18, // use your modbus slave device RX pin
-  .timeoutMs = 2000 // changes, not required
-};
+// static const modbus_config_t modbusConfig = {
+//   .baudrate = 9600,  // use your modbus slave device baud rate
+//   .serialConfig = SERIAL_8N1, // use your modbus slave device serial configuration
+//   .txPin = 17, // use your modbus slave device TX pin
+//   .rxPin = 18, // use your modbus slave device RX pin
+//   .timeoutMs = 2000 // changes, not required
+// };
 
-static const acquisition_config_t acqConfig = {
-  .scanIntervalMs = 25000
-};
+// static const acquisition_config_t acqConfig = {
+//   .scanIntervalMs = 25000
+// };
 
-static const publisher_config_t publisherConfig = {
-  .publishIntervalMs = 50000,
-};
+// static const publisher_config_t publisherConfig = {
+//   .publishIntervalMs = 50000,
+// };
 
-static const nextion_config_t nextionConfig = {
-  .rxPin = 1,
-  .txPin = 2,
-  .baudrate = 9600,
-  .intervalMs = 60000
-};
+// static const nextion_config_t nextionConfig = {
+//   .rxPin = 1,
+//   .txPin = 2,
+//   .baudrate = 9600,
+//   .intervalMs = 60000
+// };
 
 /**
  * @brief Handles critical system-level initialization and execution errors.
@@ -70,7 +73,7 @@ static const nextion_config_t nextionConfig = {
  * @param status The system error code indicating the failure.
  */
 static void fault_handler(sys_status_t status){
-  LOG_ERROR(MODULE, "SYSTEM FAULT ENCOUNTERED");
+  LOG_ERROR(MODULE, "System fault occured");
 
   switch(status){
     case SYS_ERR_NO_MEMORY:
@@ -170,6 +173,9 @@ sys_status_t app_init(){
   status = logger_init();
   if(status != SYS_OK) return status;
 
+  status = config_init();
+  if(status != SYS_OK) return status;
+
   status = event_init();
   if(status != SYS_OK) return status;
 
@@ -182,28 +188,28 @@ sys_status_t app_init(){
   status = tag_runtime_init();
   if(status != SYS_OK) return status;
 
-  status = modbus_init(&modbusConfig);
+  status = modbus_init(config_get_modbus());
   if(status != SYS_OK) return status;
 
   status = protocol_dispatcher_init();
   if(status != SYS_OK) return status;
 
-  status = acquisition_init(&acqConfig);
+  status = acquisition_init(config_get_acq());
   if(status != SYS_OK) return status;
 
-  status = publisher_init(&publisherConfig);
+  status = publisher_init(config_get_publisher());
   if(status != SYS_OK) return status;
   
   status = subscriber_init();
   if(status != SYS_OK) return status;
 
-  status = wifi_init(&wifiConfig);
+  status = wifi_init(config_get_wifi());
   if(status != SYS_OK) return status;
 
-  status = mqtt_init(&mqttConfig);
+  status = mqtt_init(config_get_mqtt());
   if(status != SYS_OK) return status;
 
-  status = nextion_init(&nextionConfig);
+  status = nextion_init(config_get_nextion());
   if(status != SYS_OK) return status;
   
   return SYS_OK;
@@ -235,7 +241,11 @@ void setup(){
   sys_status_t status;
 
   status = app_init();
-  if(status != SYS_OK) fault_handler(status);
+  if(status != SYS_OK){
+    fault_handler(status);
+    LOG_ERROR(MODULE, "Initialization failed");
+    return;
+  }
   LOG_INFO(MODULE, "Initialization success!");
 
   status = app_start();
@@ -243,6 +253,4 @@ void setup(){
   LOG_INFO(MODULE, "start success!");
 }
 
-void loop(){
-  // Main loop left intentionally empty, FreeRTOS handles the tasks
-}
+void loop(){}

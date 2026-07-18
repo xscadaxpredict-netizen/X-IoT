@@ -1,0 +1,38 @@
+{
+  "wifi": {
+    "ssid": "Xpredict_Labs",
+    "password": "Xplbs@1005",
+    "autoReconnect": true,
+    "reconnectTimeoutMs": 20000
+  },
+  "mqtt": {
+    "broker": "abc",
+    "port": 1883,
+    "username": "abc",
+    "password": "Xplbs@123",
+    "clientId": "abc",
+    "secure": false,
+    "cleanSession": false,
+    "autoReconnect": true,
+    "keepAlive": 120
+  },
+  "modbus": {
+    "baudrate": 9600,
+    "serialConfig": "SERIAL_8N1",
+    "txPin": 17,
+    "rxPin": 18,
+    "timeoutMs": 2000
+  },
+  "acquisition": {
+    "scanIntervalMs": 10000
+  },
+  "publisher": {
+    "publishIntervalMs": 20000
+  },
+  "nextion": {
+    "rxPin": 1,
+    "txPin": 2,
+    "baudrate": 9600,
+    "intervalMs": 2000
+  }
+}
