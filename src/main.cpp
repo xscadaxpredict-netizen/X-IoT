@@ -17,6 +17,7 @@
 #include "nextion_service.h"
 
 #define MODULE "APP"
+#define VERSION "v2.1.1"
 
 const mqtt_config_t mqttConfig = {
   .broker = "www.xpredictautomation.com", // domain name or IP address of the MQTT broker
