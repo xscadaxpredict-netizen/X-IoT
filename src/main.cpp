@@ -17,14 +17,14 @@
 #include "nextion_service.h"
 
 #define MODULE "APP"
-#define VERSION "v2.1.1"
+#define VERSION "v2.1.2"
 
 const mqtt_config_t mqttConfig = {
-  .broker = "www.xpredictautomation.com", // domain name or IP address of the MQTT broker
+  .broker = "abc", // domain name or IP address of the MQTT broker
   .port = 1883, // non-secure port for MQTT
-  .username = "HDR0030", // username for MQTT authentication, mandatory
-  .password = "Xplbs@123", // password for MQTT authentication, mandatory
-  .clientId = "HDR0030", // unique client ID for this device, mandatory
+  .username = "abd", // username for MQTT authentication, mandatory
+  .password = "abc", // password for MQTT authentication, mandatory
+  .clientId = "abc", // unique client ID for this device, mandatory
   .secure = false, // changes, not required
   .cleanSession = false, // changes, not required
   .autoReconnect = true, // changes, not required
@@ -32,8 +32,8 @@ const mqtt_config_t mqttConfig = {
 };
 
 static const app_wifi_config_t wifiConfig = {
-  .ssid = "Xpredict_Labs", // SSID for WiFi connection, mandatory
-  .password = "Xplbs@1005", // password for WiFi connection, mandatory
+  .ssid = "abc", // SSID for WiFi connection, mandatory
+  .password = "abc", // password for WiFi connection, mandatory
   .autoReconnect = true, // changes, not required
   .reconnectTimeoutMs = 20000, // changes, not required
   .mode = WIFI_STA // changes, not required
