@@ -20,6 +20,7 @@ static portMUX_TYPE gStateMux = portMUX_INITIALIZER_UNLOCKED;
 
 static PsychicMqttClient gClient;
 static char gURI[MAX_URI_LENGTH];
+static char gStatusTopic[MQTT_MAX_TOPIC_LENGTH];
 
 // Thread-safe state getter
 mqtt_state_t mqtt_get_state(){
@@ -116,6 +117,7 @@ sys_status_t mqtt_init(const mqtt_config_t* cfg){
   LOG_INFO(MODULE, "Initializing...");
   memcpy(&gConfig, cfg, sizeof(mqtt_config_t));
   snprintf(gURI, sizeof(gURI), "%s://%s:%u", gConfig.secure ? "mqtts" : "mqtt", gConfig.broker, gConfig.port);
+  snprintf(gStatusTopic, sizeof(gStatusTopic), "%s/MQTT-YT-300", gConfig.clientId);
 
   gTxQueue = xQueueCreate(30, sizeof(mqtt_msg_t));
   if(gTxQueue == NULL){
@@ -131,14 +133,14 @@ sys_status_t mqtt_init(const mqtt_config_t* cfg){
   .setCleanSession(gConfig.cleanSession)
   .setAutoReconnect(gConfig.autoReconnect)
   .setCACert(gConfig.caCert)
-  .setWill("HDR0029/MQTT-YT-300", 1, true, "{\"value\":0}")
+  .setWill(gStatusTopic, 1, true, "{\"value\":0}")
   .onConnect([](bool sp){
     LOG_INFO(MODULE, "Connected to the broker");
     event_post(APP_EVENTS, APP_EVENT_MQTT_CONNECTED, NULL, 0);
     mqtt_set_state(MQTT_STATE_RUNNING);
     mqtt_msg_t statusMsg = {};
 
-    strncpy(statusMsg.topic, "HDR0029/MQTT-YT-300", sizeof(statusMsg.topic)-1);
+    strncpy(statusMsg.topic, gStatusTopic, sizeof(statusMsg.topic)-1);
     statusMsg.topic[sizeof(statusMsg.topic)-1] = '\0';
     strncpy(statusMsg.payload, "{\"value\":1}", sizeof(statusMsg.payload)-1);
     statusMsg.payload[sizeof(statusMsg.payload)-1] = '\0';

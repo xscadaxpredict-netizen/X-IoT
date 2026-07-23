@@ -21,9 +21,9 @@
 const mqtt_config_t mqttConfig = {
   .broker = "www.xpredictautomation.com", // domain name or IP address of the MQTT broker
   .port = 1883, // non-secure port for MQTT
-  .username = "HDR0029", // username for MQTT authentication, mandatory
+  .username = "HDR0030", // username for MQTT authentication, mandatory
   .password = "Xplbs@123", // password for MQTT authentication, mandatory
-  .clientId = "HDR0029", // unique client ID for this device, mandatory
+  .clientId = "HDR0030", // unique client ID for this device, mandatory
   .secure = false, // changes, not required
   .cleanSession = false, // changes, not required
   .autoReconnect = true, // changes, not required
