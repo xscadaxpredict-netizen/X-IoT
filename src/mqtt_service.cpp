@@ -131,16 +131,16 @@ sys_status_t mqtt_init(const mqtt_config_t* cfg){
   .setCleanSession(gConfig.cleanSession)
   .setAutoReconnect(gConfig.autoReconnect)
   .setCACert(gConfig.caCert)
-  .setWill("ECO/WS-1/MQTT-STATUS", 1, true, "{\"value\":\"offline\"}")
+  .setWill("HDR0029/MQTT-YT-300", 1, true, "{\"value\":0}")
   .onConnect([](bool sp){
     LOG_INFO(MODULE, "Connected to the broker");
     event_post(APP_EVENTS, APP_EVENT_MQTT_CONNECTED, NULL, 0);
     mqtt_set_state(MQTT_STATE_RUNNING);
     mqtt_msg_t statusMsg = {};
 
-    strncpy(statusMsg.topic, "ECO/WS-1/MQTT-STATUS", sizeof(statusMsg.topic)-1);
+    strncpy(statusMsg.topic, "HDR0029/MQTT-YT-300", sizeof(statusMsg.topic)-1);
     statusMsg.topic[sizeof(statusMsg.topic)-1] = '\0';
-    strncpy(statusMsg.payload, "{\"value\":\"online\"}", sizeof(statusMsg.payload)-1);
+    strncpy(statusMsg.payload, "{\"value\":1}", sizeof(statusMsg.payload)-1);
     statusMsg.payload[sizeof(statusMsg.payload)-1] = '\0';
 
     statusMsg.len = strnlen(statusMsg.payload, sizeof(statusMsg.payload)-1);

@@ -2,7 +2,7 @@
 #include "logger.h"
 #include "tag_registry.h"
 #include "tag_runtime.h"
-#include "tag_processor.h"
+// #include "tag_processor.h"
 
 #define MODULE "ACQUISITION"
 
@@ -82,18 +82,11 @@ static void acquisition_task(void* pvParameters){
       if(runtime_tag != NULL){
         if(tag_runtime_lock() == SYS_OK){
           if(response.status == SYS_OK){
-            runtime_tag->rawValue = response.value;
-            sys_status_t proc_status = tag_process(runtime_tag);
-            if (proc_status == SYS_OK) {
-              runtime_tag->valid = true;
-              runtime_tag->timestamp = millis();
-              runtime_tag->changed = true;
-            } 
-            else {
-              runtime_tag->valid = false;
-              LOG_ERROR(MODULE, "Processing failed for tag %s", runtime_tag->config->name);
-            }
-          } 
+            runtime_tag->value = response.value;
+            runtime_tag->valid = true;
+            runtime_tag->timestamp = millis();
+            runtime_tag->changed = true;
+          }
           else {
             runtime_tag->valid = false;
             LOG_ERROR(MODULE, "Protocol read error for tag %s", runtime_tag->config->name);

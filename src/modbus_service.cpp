@@ -86,7 +86,7 @@ void on_modbus_error(Error error, uint32_t token) {
   if(gModbusCommHealthy) {
     gModbusCommHealthy = false;
     event_post(APP_EVENTS, APP_EVENT_MODBUS_NETWORK_DOWN, NULL, 0);
-    event_post(APP_EVENTS, APP_EVENT_SYSTEM_FAULT, NULL, 0);
+    // event_post(APP_EVENTS, APP_EVENT_SYSTEM_FAULT, NULL, 0);
   }
 
   protocol_response_t p_resp;

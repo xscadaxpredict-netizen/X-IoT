@@ -23,7 +23,6 @@ sys_status_t tag_runtime_init(){
   
   for(uint16_t i = 0; i < tag_count(); i++){
     gTagRuntime[i].config = tag_get_at(i);
-    memset(&gTagRuntime[i].rawValue, 0, sizeof(tag_value_t));
     memset(&gTagRuntime[i].value, 0, sizeof(tag_value_t));
     gTagRuntime[i].valid = false;
     gTagRuntime[i].changed = false;

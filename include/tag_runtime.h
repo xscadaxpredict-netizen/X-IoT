@@ -17,7 +17,6 @@ typedef union {
 // Renamed from tag_data_t to tag_runtime_t
 typedef struct {
   const tag_config_t* config;
-  tag_value_t rawValue;
   tag_value_t value;         
   uint32_t timestamp;
   bool valid;

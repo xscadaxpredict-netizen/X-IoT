@@ -35,40 +35,6 @@ sys_status_t build_message(const tag_runtime_t* tag, mqtt_msg_t* msg){
 
   switch(tag->config->dataType){
     case TAG_BOOL:
-      doc["rawValue"] = tag->rawValue.bv;
-      break;
-
-    case TAG_UINT16:
-      doc["rawValue"] = tag->rawValue.u16v;
-      break;
-
-    case TAG_INT16:
-      doc["rawValue"] = tag->rawValue.i16v;
-      break;
-
-    case TAG_UINT32:
-      doc["rawValue"] = tag->rawValue.u32v;
-      break;
-
-    case TAG_INT32:
-      doc["rawValue"] = tag->rawValue.i32v;
-      break;
-
-    case TAG_FLOAT32:
-      doc["rawValue"] = tag->rawValue.f32v;
-      break;
-
-    case TAG_STRING:
-      doc["rawValue"] = tag->rawValue.strv;
-      break;
-
-    default:
-      break;
-  }
-  
-  tag_type_t valType = (tag->config->valueDataType == 0) ? tag->config->dataType : tag->config->valueDataType;
-  switch(valType){
-    case TAG_BOOL:
       doc["value"] = tag->value.bv;
       break;
 
@@ -95,12 +61,11 @@ sys_status_t build_message(const tag_runtime_t* tag, mqtt_msg_t* msg){
     case TAG_STRING:
       doc["value"] = tag->value.strv;
       break;
-      
+
     default:
-      return SYS_ERR_INVALID_PARAM;
+      break;
   }
-
-
+  
   msg->len = serializeJson(doc, msg->payload, sizeof(msg->payload));
   if(msg->len == 0){
     LOG_ERROR(MODULE, "Failed to serialize message");

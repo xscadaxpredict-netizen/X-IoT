@@ -21,9 +21,9 @@
 const mqtt_config_t mqttConfig = {
   .broker = "www.xpredictautomation.com", // domain name or IP address of the MQTT broker
   .port = 1883, // non-secure port for MQTT
-  .username = "tworks_controller", // username for MQTT authentication, mandatory
+  .username = "HDR0029", // username for MQTT authentication, mandatory
   .password = "Xplbs@123", // password for MQTT authentication, mandatory
-  .clientId = "tworks_controller", // unique client ID for this device, mandatory
+  .clientId = "HDR0029", // unique client ID for this device, mandatory
   .secure = false, // changes, not required
   .cleanSession = false, // changes, not required
   .autoReconnect = true, // changes, not required
@@ -31,8 +31,8 @@ const mqtt_config_t mqttConfig = {
 };
 
 static const app_wifi_config_t wifiConfig = {
-  .ssid = "Xpredict_Digital", // SSID for WiFi connection, mandatory
-  .password = "Xplbs@123", // password for WiFi connection, mandatory
+  .ssid = "Xpredict_Labs", // SSID for WiFi connection, mandatory
+  .password = "Xplbs@1005", // password for WiFi connection, mandatory
   .autoReconnect = true, // changes, not required
   .reconnectTimeoutMs = 20000, // changes, not required
   .mode = WIFI_STA // changes, not required
@@ -47,11 +47,11 @@ static const modbus_config_t modbusConfig = {
 };
 
 static const acquisition_config_t acqConfig = {
-  .scanIntervalMs = 25000
+  .scanIntervalMs = 10000
 };
 
 static const publisher_config_t publisherConfig = {
-  .publishIntervalMs = 50000,
+  .publishIntervalMs = 30000,
 };
 
 static const nextion_config_t nextionConfig = {
