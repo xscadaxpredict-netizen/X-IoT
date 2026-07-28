@@ -1,16 +1,16 @@
 {
   "wifi": {
-    "ssid": "Xpredict_Labs",
-    "password": "Xplbs@1005",
+    "ssid": "your_ssid",
+    "password": "your_pass",
     "autoReconnect": true,
     "reconnectTimeoutMs": 20000
   },
   "mqtt": {
-    "broker": "abc",
+    "broker": "broker_ip",
     "port": 1883,
-    "username": "abc",
-    "password": "Xplbs@123",
-    "clientId": "abc",
+    "username": "your_username",
+    "password": "your_password",
+    "clientId": "your_client_id",
     "secure": false,
     "cleanSession": false,
     "autoReconnect": true,
@@ -34,5 +34,9 @@
     "txPin": 2,
     "baudrate": 9600,
     "intervalMs": 2000
+  },
+  "portal": {
+    "username": "xpredict",
+    "password": "Xplbs@123"
   }
 }

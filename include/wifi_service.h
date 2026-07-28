@@ -25,7 +25,7 @@ typedef struct{
   const char *password;
   bool autoReconnect;
   uint32_t reconnectTimeoutMs;
-  wifi_mode_t mode;
+  // wifi_mode_t mode;
 } app_wifi_config_t;
 
 sys_status_t wifi_init(const app_wifi_config_t* cfg);

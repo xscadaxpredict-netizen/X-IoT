@@ -34,6 +34,13 @@ sys_status_t tag_registry_init(uint16_t capacity) {
 
   gCapacity = capacity;
   gTagCount = 0;
+
+  if (gCapacity == 0) {
+    gTags = NULL;
+    LOG_INFO(MODULE, "Registry initialized (empty, 0 tags)");
+    return SYS_OK;
+  }
+  
   gTags = (tag_config_t*)calloc(gCapacity, sizeof(tag_config_t));
   if (gTags == NULL) {
     LOG_ERROR(MODULE, "Failed to allocate memory for tag registry");

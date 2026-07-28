@@ -1,0 +1,38 @@
+[
+    {
+    "tagId": 2,
+    "name": "MODE-YT",
+    "unit": "Status",
+    "topic": "XP/TW-01/MODE-YT-100",
+    "topicType": "PUBLISH",
+    "source": "MODBUS",
+    "access": "READ_ONLY",
+    "dataType": "TAG_BOOL",
+    "nxtComponent": "t18",
+    "modbus": {
+      "slaveId": 2,
+      "address": 12,
+      "quantity": 1,
+      "functionCode": 1,
+      "wordOrder": "WORD_CDAB"
+    }
+  },
+  {
+    "tagId": 4,
+    "name": "RSP-YT",
+    "unit": "Status",
+    "topic": "XP/TW-01/RSP-YT-101",
+    "topicType": "PUBLISH",
+    "source": "MODBUS",
+    "access": "READ_ONLY",
+    "dataType": "TAG_BOOL",
+    "nxtComponent": "t11",
+    "modbus": {
+      "slaveId": 2,
+      "address": 13,
+      "quantity": 1,
+      "functionCode": 1,
+      "wordOrder": "WORD_CDAB"
+    }
+  }
+]

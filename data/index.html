@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gateway Setup Portal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-card: rgba(15, 20, 40, 0.85);
+      --bg-input: rgba(25, 32, 60, 0.9);
+      --border: rgba(80, 100, 160, 0.25);
+      --border-focus: #6c8cff;
+      --border-error: #ff4d6a;
+      --text-primary: #e8ecf4;
+      --text-secondary: #8892a8;
+      --text-label: #a0aac0;
+      --accent: #6c8cff;
+      --accent-hover: #8ba4ff;
+      --accent-glow: rgba(108, 140, 255, 0.25);
+      --success: #34d399;
+      --error: #ff4d6a;
+      --error-bg: rgba(255, 77, 106, 0.08);
+      --warning: #fbbf24;
+      --tab-active: #6c8cff;
+      --tab-inactive: rgba(80, 100, 160, 0.3);
+      --toggle-on: #6c8cff;
+      --toggle-off: rgba(80, 100, 160, 0.4);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(108, 140, 255, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .portal {
+      width: 100%;
+      max-width: 640px;
+      margin-top: 10px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .header .logo {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 5px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      backdrop-filter: blur(16px);
+    }
+    .tab {
+      flex: 1;
+      padding: 10px 6px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+    .tab:hover { color: var(--text-primary); background: var(--tab-inactive); }
+    .tab.active {
+      color: #fff;
+      background: var(--tab-active);
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    /* Card */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(16px);
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .icon { font-size: 18px; }
+
+    /* Tab Panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Form Groups */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-group label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-label);
+    }
+    .form-group label .req {
+      color: var(--error);
+      margin-left: 2px;
+    }
+    .form-group input, .form-group select {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      width: 100%;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-group input.error, .form-group select.error {
+      border-color: var(--border-error);
+      background: var(--error-bg);
+      box-shadow: 0 0 0 3px rgba(255, 77, 106, 0.1);
+    }
+    .form-group .error-msg {
+      font-size: 11px;
+      color: var(--error);
+      display: none;
+      margin-top: 2px;
+    }
+    .form-group input.error ~ .error-msg,
+    .form-group select.error ~ .error-msg {
+      display: block;
+    }
+    .form-group input::placeholder { color: var(--text-secondary); opacity: 0.5; }
+
+    /* Toggle Switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .toggle-label span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      cursor: pointer;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle .slider {
+      position: absolute;
+      inset: 0;
+      background: var(--toggle-off);
+      border-radius: 24px;
+      transition: background 0.3s ease;
+    }
+    .toggle .slider::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    .toggle input:checked + .slider { background: var(--toggle-on); }
+    .toggle input:checked + .slider::before { transform: translateX(20px); }
+
+    /* File Upload */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-bottom: 14px;
+    }
+    .upload-zone:hover {
+      border-color: var(--accent);
+      background: rgba(108, 140, 255, 0.04);
+    }
+    .upload-zone.dragover {
+      border-color: var(--accent);
+      background: rgba(108, 140, 255, 0.08);
+    }
+    .upload-zone .upload-icon { font-size: 32px; margin-bottom: 8px; }
+    .upload-zone .upload-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .upload-zone .upload-text strong { color: var(--accent); }
+    .upload-zone .file-name {
+      font-size: 12px;
+      color: var(--success);
+      margin-top: 8px;
+      display: none;
+    }
+    .upload-zone input[type="file"] { display: none; }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 6px 24px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-danger {
+      background: rgba(255, 77, 106, 0.12);
+      color: var(--error);
+      border: 1px solid rgba(255, 77, 106, 0.25);
+    }
+    .btn-danger:hover {
+      background: rgba(255, 77, 106, 0.2);
+    }
+    .btn-secondary {
+      background: var(--tab-inactive);
+      color: var(--text-primary);
+    }
+    .btn-secondary:hover {
+      background: rgba(80, 100, 160, 0.45);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 1000;
+      transition: transform 0.35s ease;
+      backdrop-filter: blur(12px);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+    }
+    .toast.error {
+      background: rgba(255, 77, 106, 0.15);
+      color: var(--error);
+      border: 1px solid rgba(255, 77, 106, 0.3);
+    }
+    .toast.warning {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+      .form-row { grid-template-columns: 1fr; }
+      .tabs { flex-wrap: nowrap; }
+      .tab { font-size: 11px; padding: 8px 4px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="portal">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">Xpredict Automation</div>
+      <h1>Gateway Configuration</h1>
+      <p>Configure your IoT gateway settings</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="wifi">WiFi</button>
+      <button class="tab" data-tab="mqtt">MQTT</button>
+      <button class="tab" data-tab="modbus">Modbus</button>
+      <button class="tab" data-tab="telemetry">Telemetry</button>
+      <button class="tab" data-tab="portal">Portal</button>
+      <button class="tab" data-tab="tags">Tags</button>
+    </div>
+
+    <!-- WiFi Tab -->
+    <div class="tab-panel active" id="tab-wifi">
+      <div class="card">
+        <div class="card-title"><span class="icon">📡</span> WiFi Configuration</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>SSID <span class="req">*</span></label>
+            <input type="text" id="wifi-ssid" placeholder="Network name" data-required>
+            <div class="error-msg">SSID is required</div>
+          </div>
+          <div class="form-group">
+            <label>Password <span class="req">*</span></label>
+            <input type="password" id="wifi-password" placeholder="Network password" data-required>
+            <div class="error-msg">Password is required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Reconnect Timeout (ms) <span class="req">*</span></label>
+            <input type="number" id="wifi-reconnectTimeoutMs" placeholder="20000" data-required>
+            <div class="error-msg">Timeout is required</div>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">Auto Reconnect<span>Automatically reconnect on disconnect</span></div>
+          <label class="toggle"><input type="checkbox" id="wifi-autoReconnect" checked><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- MQTT Tab -->
+    <div class="tab-panel" id="tab-mqtt">
+      <div class="card">
+        <div class="card-title"><span class="icon">☁️</span> MQTT Configuration</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Broker <span class="req">*</span></label>
+            <input type="text" id="mqtt-broker" placeholder="mqtt.example.com" data-required>
+            <div class="error-msg">Broker is required</div>
+          </div>
+          <div class="form-group">
+            <label>Port <span class="req">*</span></label>
+            <input type="number" id="mqtt-port" placeholder="1883" data-required>
+            <div class="error-msg">Port is required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Username <span class="req">*</span></label>
+            <input type="text" id="mqtt-username" placeholder="Username" data-required>
+            <div class="error-msg">Username is required</div>
+          </div>
+          <div class="form-group">
+            <label>Password <span class="req">*</span></label>
+            <input type="password" id="mqtt-password" placeholder="Password" data-required>
+            <div class="error-msg">Password is required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Client ID <span class="req">*</span></label>
+            <input type="text" id="mqtt-clientId" placeholder="gateway_01" data-required>
+            <div class="error-msg">Client ID is required</div>
+          </div>
+          <div class="form-group">
+            <label>Keep Alive (s) <span class="req">*</span></label>
+            <input type="number" id="mqtt-keepAlive" placeholder="120" data-required>
+            <div class="error-msg">Keep Alive is required</div>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">Secure (TLS)<span>Use encrypted connection</span></div>
+          <label class="toggle"><input type="checkbox" id="mqtt-secure"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">Clean Session<span>Start fresh on each connection</span></div>
+          <label class="toggle"><input type="checkbox" id="mqtt-cleanSession"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">Auto Reconnect<span>Automatically reconnect on disconnect</span></div>
+          <label class="toggle"><input type="checkbox" id="mqtt-autoReconnect" checked><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modbus Tab -->
+    <div class="tab-panel" id="tab-modbus">
+      <div class="card">
+        <div class="card-title"><span class="icon">🔌</span> Modbus Configuration</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Baudrate <span class="req">*</span></label>
+            <select id="modbus-baudrate" data-required>
+              <option value="">Select baudrate</option>
+              <option value="2400">2400</option>
+              <option value="4800">4800</option>
+              <option value="9600">9600</option>
+              <option value="19200">19200</option>
+              <option value="38400">38400</option>
+              <option value="57600">57600</option>
+              <option value="115200">115200</option>
+            </select>
+            <div class="error-msg">Baudrate is required</div>
+          </div>
+          <div class="form-group">
+            <label>Serial Config <span class="req">*</span></label>
+            <select id="modbus-serialConfig" data-required>
+              <option value="">Select config</option>
+              <option value="SERIAL_8N1">8N1</option>
+              <option value="SERIAL_8N2">8N2</option>
+              <option value="SERIAL_8E1">8E1</option>
+              <option value="SERIAL_8O1">8O1</option>
+            </select>
+            <div class="error-msg">Serial config is required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>TX Pin <span class="req">*</span></label>
+            <input type="number" id="modbus-txPin" placeholder="17" data-required>
+            <div class="error-msg">TX Pin is required</div>
+          </div>
+          <div class="form-group">
+            <label>RX Pin <span class="req">*</span></label>
+            <input type="number" id="modbus-rxPin" placeholder="18" data-required>
+            <div class="error-msg">RX Pin is required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Timeout (ms) <span class="req">*</span></label>
+            <input type="number" id="modbus-timeoutMs" placeholder="2000" data-required>
+            <div class="error-msg">Timeout is required</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Telemetry Tab -->
+    <div class="tab-panel" id="tab-telemetry">
+      <div class="card">
+        <div class="card-title"><span class="icon">📊</span> Telemetry Intervals</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Scan Interval (ms) <span class="req">*</span></label>
+            <input type="number" id="acquisition-scanIntervalMs" placeholder="10000" data-required>
+            <div class="error-msg">Scan interval is required</div>
+          </div>
+          <div class="form-group">
+            <label>Publish Interval (ms) <span class="req">*</span></label>
+            <input type="number" id="publisher-publishIntervalMs" placeholder="20000" data-required>
+            <div class="error-msg">Publish interval is required</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon">🖥️</span> Nextion Display</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>RX Pin <span class="req">*</span></label>
+            <input type="number" id="nextion-rxPin" placeholder="1" data-required>
+            <div class="error-msg">RX Pin is required</div>
+          </div>
+          <div class="form-group">
+            <label>TX Pin <span class="req">*</span></label>
+            <input type="number" id="nextion-txPin" placeholder="2" data-required>
+            <div class="error-msg">TX Pin is required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Baudrate <span class="req">*</span></label>
+            <select id="nextion-baudrate" data-required>
+              <option value="">Select baudrate</option>
+              <option value="2400">2400</option>
+              <option value="4800">4800</option>
+              <option value="9600">9600</option>
+              <option value="19200">19200</option>
+              <option value="38400">38400</option>
+              <option value="57600">57600</option>
+              <option value="115200">115200</option>
+            </select>
+            <div class="error-msg">Baudrate is required</div>
+          </div>
+          <div class="form-group">
+            <label>Update Interval (ms) <span class="req">*</span></label>
+            <input type="number" id="nextion-updateIntervalMs" placeholder="2000" data-required>
+            <div class="error-msg">Update interval is required</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Portal Tab -->
+    <div class="tab-panel" id="tab-portal">
+      <div class="card">
+        <div class="card-title"><span class="icon">🔒</span> Portal Authentication</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Username <span class="req">*</span></label>
+            <input type="text" id="portal-username" placeholder="admin" data-required>
+            <div class="error-msg">Username is required</div>
+          </div>
+          <div class="form-group">
+            <label>Password <span class="req">*</span></label>
+            <input type="password" id="portal-password" placeholder="Enter password" data-required>
+            <div class="error-msg">Password is required</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags Tab -->
+    <div class="tab-panel" id="tab-tags">
+      <div class="card">
+        <div class="card-title"><span class="icon">🏷️</span> Tag Configuration Upload</div>
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon">📁</div>
+          <div class="upload-text">Drag &amp; drop <strong>tag_config.json</strong> here or click to browse</div>
+          <div class="file-name" id="file-name"></div>
+          <input type="file" id="file-input" accept=".json">
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-secondary" id="btn-upload-tags">⬆️ Upload Tags</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons (Always visible) -->
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btn-save">💾 Save Settings</button>
+      <button class="btn btn-danger" id="btn-reboot">🔄 Reboot</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── Tab Switching ──
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ── Toast ──
+    function showToast(msg, type) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = 'toast ' + type + ' show';
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ── Validation ──
+    function clearErrors() {
+      document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+    }
+
+    function validateAll() {
+      clearErrors();
+      let valid = true;
+      let firstErrorTab = null;
+
+      document.querySelectorAll('[data-required]').forEach(field => {
+        const val = field.value.trim();
+        if (val === '') {
+          field.classList.add('error');
+          valid = false;
+          if (!firstErrorTab) {
+            const panel = field.closest('.tab-panel');
+            if (panel) firstErrorTab = panel.id.replace('tab-', '');
+          }
+        }
+      });
+
+      if (!valid && firstErrorTab) {
+        // Switch to the tab with the first error
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        const targetTab = document.querySelector('.tab[data-tab="' + firstErrorTab + '"]');
+        if (targetTab) targetTab.classList.add('active');
+        document.getElementById('tab-' + firstErrorTab).classList.add('active');
+        showToast('Please fill in all required fields', 'warning');
+      }
+
+      return valid;
+    }
+
+    // Clear error on field input
+    document.querySelectorAll('[data-required]').forEach(field => {
+      field.addEventListener('input', () => field.classList.remove('error'));
+      field.addEventListener('change', () => field.classList.remove('error'));
+    });
+
+    // ── Load Config ──
+    async function loadConfig() {
+      try {
+        const res = await fetch('/api/config');
+        if (!res.ok) throw new Error('Failed to load');
+        const cfg = await res.json();
+
+        // WiFi
+        if (cfg.wifi) {
+          document.getElementById('wifi-ssid').value = cfg.wifi.ssid || '';
+          document.getElementById('wifi-password').value = cfg.wifi.password || '';
+          document.getElementById('wifi-autoReconnect').checked = cfg.wifi.autoReconnect !== false;
+          document.getElementById('wifi-reconnectTimeoutMs').value = cfg.wifi.reconnectTimeoutMs || '';
+        }
+
+        // MQTT
+        if (cfg.mqtt) {
+          document.getElementById('mqtt-broker').value = cfg.mqtt.broker || '';
+          document.getElementById('mqtt-port').value = cfg.mqtt.port || '';
+          document.getElementById('mqtt-username').value = cfg.mqtt.username || '';
+          document.getElementById('mqtt-password').value = cfg.mqtt.password || '';
+          document.getElementById('mqtt-clientId').value = cfg.mqtt.clientId || '';
+          document.getElementById('mqtt-keepAlive').value = cfg.mqtt.keepAlive || '';
+          document.getElementById('mqtt-secure').checked = cfg.mqtt.secure === true;
+          document.getElementById('mqtt-cleanSession').checked = cfg.mqtt.cleanSession === true;
+          document.getElementById('mqtt-autoReconnect').checked = cfg.mqtt.autoReconnect !== false;
+        }
+
+        // Modbus
+        if (cfg.modbus) {
+          document.getElementById('modbus-baudrate').value = cfg.modbus.baudrate || '';
+          document.getElementById('modbus-serialConfig').value = cfg.modbus.serialConfig || '';
+          document.getElementById('modbus-txPin').value = cfg.modbus.txPin || '';
+          document.getElementById('modbus-rxPin').value = cfg.modbus.rxPin || '';
+          document.getElementById('modbus-timeoutMs').value = cfg.modbus.timeoutMs || '';
+        }
+
+        // Acquisition
+        if (cfg.acquisition) {
+          document.getElementById('acquisition-scanIntervalMs').value = cfg.acquisition.scanIntervalMs || '';
+        }
+
+        // Publisher
+        if (cfg.publisher) {
+          document.getElementById('publisher-publishIntervalMs').value = cfg.publisher.publishIntervalMs || '';
+        }
+
+        // Nextion
+        if (cfg.nextion) {
+          document.getElementById('nextion-rxPin').value = cfg.nextion.rxPin || '';
+          document.getElementById('nextion-txPin').value = cfg.nextion.txPin || '';
+          document.getElementById('nextion-baudrate').value = cfg.nextion.baudrate || '';
+          document.getElementById('nextion-updateIntervalMs').value = cfg.nextion.updateIntervalMs || '';
+        }
+
+        // Portal
+        if (cfg.portal) {
+          document.getElementById('portal-username').value = cfg.portal.username || '';
+          document.getElementById('portal-password').value = cfg.portal.password || '';
+        }
+
+      } catch (e) {
+        showToast('Failed to load configuration', 'error');
+      }
+    }
+
+    // ── Build Config JSON ──
+    function buildConfig() {
+      return {
+        wifi: {
+          ssid: document.getElementById('wifi-ssid').value.trim(),
+          password: document.getElementById('wifi-password').value.trim(),
+          autoReconnect: document.getElementById('wifi-autoReconnect').checked,
+          reconnectTimeoutMs: parseInt(document.getElementById('wifi-reconnectTimeoutMs').value) || 20000
+        },
+        mqtt: {
+          broker: document.getElementById('mqtt-broker').value.trim(),
+          port: parseInt(document.getElementById('mqtt-port').value) || 1883,
+          username: document.getElementById('mqtt-username').value.trim(),
+          password: document.getElementById('mqtt-password').value.trim(),
+          clientId: document.getElementById('mqtt-clientId').value.trim(),
+          secure: document.getElementById('mqtt-secure').checked,
+          cleanSession: document.getElementById('mqtt-cleanSession').checked,
+          autoReconnect: document.getElementById('mqtt-autoReconnect').checked,
+          keepAlive: parseInt(document.getElementById('mqtt-keepAlive').value) || 120
+        },
+        modbus: {
+          baudrate: parseInt(document.getElementById('modbus-baudrate').value) || 9600,
+          serialConfig: document.getElementById('modbus-serialConfig').value,
+          txPin: parseInt(document.getElementById('modbus-txPin').value) || 17,
+          rxPin: parseInt(document.getElementById('modbus-rxPin').value) || 18,
+          timeoutMs: parseInt(document.getElementById('modbus-timeoutMs').value) || 2000
+        },
+        acquisition: {
+          scanIntervalMs: parseInt(document.getElementById('acquisition-scanIntervalMs').value) || 10000
+        },
+        publisher: {
+          publishIntervalMs: parseInt(document.getElementById('publisher-publishIntervalMs').value) || 20000
+        },
+        nextion: {
+          rxPin: parseInt(document.getElementById('nextion-rxPin').value) || 1,
+          txPin: parseInt(document.getElementById('nextion-txPin').value) || 2,
+          baudrate: parseInt(document.getElementById('nextion-baudrate').value) || 9600,
+          updateIntervalMs: parseInt(document.getElementById('nextion-updateIntervalMs').value) || 2000
+        },
+        portal: {
+          username: document.getElementById('portal-username').value.trim(),
+          password: document.getElementById('portal-password').value.trim()
+        }
+      };
+    }
+
+    // ── Save Settings ──
+    document.getElementById('btn-save').addEventListener('click', async () => {
+      if (!validateAll()) return;
+
+      const btn = document.getElementById('btn-save');
+      btn.disabled = true;
+      btn.textContent = '⏳ Saving...';
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(buildConfig())
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Settings saved! Device rebooting...', 'success');
+        } else {
+          showToast(data.message || 'Save failed', 'error');
+          btn.disabled = false;
+          btn.textContent = '💾 Save Settings';
+        }
+      } catch (e) {
+        showToast('Connection error', 'error');
+        btn.disabled = false;
+        btn.textContent = '💾 Save Settings';
+      }
+    });
+
+    // ── Reboot ──
+    document.getElementById('btn-reboot').addEventListener('click', async () => {
+      if (!confirm('Are you sure you want to reboot the gateway?')) return;
+      try {
+        await fetch('/api/reboot', { method: 'POST' });
+        showToast('Rebooting device...', 'success');
+      } catch (e) {
+        showToast('Reboot command sent', 'success');
+      }
+    });
+
+    // ── File Upload ──
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileNameEl = document.getElementById('file-name');
+    let selectedFile = null;
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length > 0) {
+        selectedFile = e.dataTransfer.files[0];
+        fileNameEl.textContent = '✅ ' + selectedFile.name;
+        fileNameEl.style.display = 'block';
+      }
+    });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        selectedFile = fileInput.files[0];
+        fileNameEl.textContent = '✅ ' + selectedFile.name;
+        fileNameEl.style.display = 'block';
+      }
+    });
+
+    document.getElementById('btn-upload-tags').addEventListener('click', async () => {
+      if (!selectedFile) {
+        showToast('Please select a tag_config.json file first', 'warning');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      try {
+        const res = await fetch('/api/upload-tags', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Tag configuration uploaded', 'success');
+        } else {
+          showToast(data.message || 'Upload failed', 'error');
+        }
+      } catch (e) {
+        showToast('Upload connection error', 'error');
+      }
+    });
+
+    // ── Init ──
+    loadConfig();
+  </script>
+</body>
+</html>

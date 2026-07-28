@@ -9,6 +9,7 @@
 #include "acquisition.h"
 #include "publisher.h"
 #include "nextion_service.h"
+#include "web_server.h"
 
 sys_status_t config_init(void);
 
@@ -18,5 +19,6 @@ const modbus_config_t* config_get_modbus(void);
 const acquisition_config_t* config_get_acq(void);
 const publisher_config_t* config_get_publisher(void);
 const nextion_config_t* config_get_nextion(void);
+const portal_config_t* config_get_portal(void);
 
 #endif

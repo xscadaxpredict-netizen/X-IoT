@@ -23,6 +23,9 @@ typedef struct {
   WiFiEventInfo_t info;
 } wifi_msg_t;
 
+static const char* apSSID = "Xpredict_Gateway";
+static const char* apPass = "Xplbs@123"; // Min 8 chars for WPA2
+
 static app_wifi_config_t gConfig;
 
 static QueueHandle_t xWifiQueueHandle = NULL;
@@ -227,6 +230,28 @@ void wifiEventHandler(WiFiEvent_t event, WiFiEventInfo_t info){
     case ARDUINO_EVENT_WIFI_STA_LOST_IP:
       tx_wifi_msg_buff.event = WIFI_EVT_LOST_IP;
       break;
+      
+    // AP Events
+    case ARDUINO_EVENT_WIFI_AP_START:
+      LOG_INFO(MODULE, "SoftAP Started (SSID: %s, IP: %s)", apSSID, WiFi.softAPIP().toString().c_str());
+      return;
+    case ARDUINO_EVENT_WIFI_AP_STOP:
+      LOG_INFO(MODULE, "SoftAP Stopped");
+      return;
+    case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
+      LOG_INFO(MODULE, "SoftAP Client Connected | MAC: %02X:%02X:%02X:%02X:%02X:%02X (AID: %d)",
+               info.wifi_ap_staconnected.mac[0], info.wifi_ap_staconnected.mac[1],
+               info.wifi_ap_staconnected.mac[2], info.wifi_ap_staconnected.mac[3],
+               info.wifi_ap_staconnected.mac[4], info.wifi_ap_staconnected.mac[5],
+               info.wifi_ap_staconnected.aid);
+      return;
+    case ARDUINO_EVENT_WIFI_AP_STADISCONNECTED:
+      LOG_INFO(MODULE, "SoftAP Client Disconnected | MAC: %02X:%02X:%02X:%02X:%02X:%02X (AID: %d)",
+               info.wifi_ap_stadisconnected.mac[0], info.wifi_ap_stadisconnected.mac[1],
+               info.wifi_ap_stadisconnected.mac[2], info.wifi_ap_stadisconnected.mac[3],
+               info.wifi_ap_stadisconnected.mac[4], info.wifi_ap_stadisconnected.mac[5],
+               info.wifi_ap_stadisconnected.aid);
+      return;
     default:
         return;
   }
@@ -262,10 +287,21 @@ sys_status_t wifi_init(const app_wifi_config_t* cfg){
     return SYS_ERR_NO_MEMORY;
   }
 
-  WiFi.mode(gConfig.mode);
+  WiFi.mode(WIFI_AP_STA);
   WiFi.persistent(false);
   WiFi.setSleep(false);
   WiFi.setAutoReconnect(false);
+
+  IPAddress apIP(192, 168, 4, 1);
+  IPAddress apGateway(192, 168, 4, 1);
+  IPAddress apSubnet(255, 255, 255, 0);
+  WiFi.softAPConfig(apIP, apGateway, apSubnet);
+
+  if (!WiFi.softAP(apSSID, apPass)) {
+    LOG_ERROR(MODULE, "SoftAP startup failed!");
+    return SYS_ERR_FAIL;
+  }
+
   WiFi.onEvent(wifiEventHandler);
   
   gWifiState = WIFI_STATE_INITIALIZED;

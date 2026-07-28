@@ -14,14 +14,27 @@ sys_status_t tag_runtime_init(){
     return SYS_ERR_INVALID_STATE;
   }
 
-  if(tag_count() == 0){
-    LOG_ERROR(MODULE, "No active tags found in registry. Aborting runtime initialization.");
-    return SYS_ERR_INVALID_STATE; // Fails startup cleanly
+  LOG_INFO(MODULE, "Intializing...");
+
+  gRuntimeMutex = xSemaphoreCreateMutex();
+  if(gRuntimeMutex == NULL){
+    free(gTagRuntime);
+    LOG_ERROR(MODULE, "Failed to create mutex");
+    return SYS_ERR_NO_MEMORY;
   }
 
-  LOG_INFO(MODULE, "Intializing...");
+  gInitialized = true;
+
+  if(tag_count() == 0){
+    LOG_WARN(MODULE, "No active tags found in registry.");
+    return SYS_OK; // Fails startup cleanly
+  }
+
   gTagRuntime = (tag_runtime_t*)calloc(tag_count(), sizeof(tag_runtime_t));
   if(gTagRuntime == NULL){
+    vSemaphoreDelete(gRuntimeMutex);
+    gRuntimeMutex = NULL;
+    gInitialized = false;
     LOG_ERROR(MODULE, "Failed to allocate storage for runtime tags");
     return SYS_ERR_NO_MEMORY;
   }
@@ -33,13 +46,6 @@ sys_status_t tag_runtime_init(){
     gTagRuntime[i].valid = false;
     gTagRuntime[i].changed = false;
     gTagRuntime[i].timestamp = 0;
-  }
-
-  gRuntimeMutex = xSemaphoreCreateMutex();
-  if(gRuntimeMutex == NULL){
-    free(gTagRuntime);
-    LOG_ERROR(MODULE, "Failed to create mutex");
-    return SYS_ERR_NO_MEMORY;
   }
 
   LOG_INFO(MODULE, "Initialize success, allocated storage for %u runtime tags", tag_count());

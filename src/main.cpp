@@ -17,7 +17,7 @@
 #include "nextion_service.h"
 #include "config_service.h"
 
-#define FIRMWARE_VERSION "2.0.0"
+#define GATEWAY_VERSION "3.0.0"
 #define MODULE "APP"
 
 /**
@@ -144,6 +144,9 @@ sys_status_t app_init(){
   status = tag_runtime_init();
   if(status != SYS_OK) return status;
 
+  status = web_server_init(config_get_portal());
+  if(status != SYS_OK) return status;
+
   status = modbus_init(config_get_modbus());
   if(status != SYS_OK) return status;
 
@@ -185,6 +188,9 @@ sys_status_t app_start(){
   if(status != SYS_OK) return status;
 
   status = wifi_start();
+  if(status != SYS_OK) return status;
+
+  status = web_server_start();
   if(status != SYS_OK) return status;
 
   status = nextion_start();

@@ -12,6 +12,7 @@ static modbus_config_t gModbusConfig;
 static acquisition_config_t gAcqConfig;
 static publisher_config_t gPubConfig;
 static nextion_config_t gNxtConfig;
+static portal_config_t gPortalConfig;
 
 static bool gConfigLoaded = false;
 
@@ -89,7 +90,6 @@ static sys_status_t load_system_config() {
   gWifiConfig.password = strdup(wifi["password"] | "1234");
   gWifiConfig.autoReconnect = wifi["autoReconnect"] | true;
   gWifiConfig.reconnectTimeoutMs = wifi["reconnectTimeoutMs"] | 20000;
-  gWifiConfig.mode = WIFI_STA;
 
   // Parse MQTT Config
   JsonObject mqtt = doc["mqtt"];
@@ -123,6 +123,10 @@ static sys_status_t load_system_config() {
   gNxtConfig.txPin = nxt["txPin"] | 2;
   gNxtConfig.baudrate = nxt["baudrate"] | 9600;
   gNxtConfig.intervalMs = nxt["intervalMs"] | 2000;
+
+  JsonObject portal = doc["portal"];
+  gPortalConfig.username = strdup(portal["username"] | "admin");
+  gPortalConfig.password = strdup(portal["password"] | "admin");
 
   LOG_INFO(MODULE, "System configurations loaded successfully");
   return SYS_OK;
@@ -162,31 +166,7 @@ static sys_status_t load_tags_config() {
     tag.source = parse_source(jsonTag["source"]);
     tag.access = parse_access(jsonTag["access"]);
     tag.dataType = parse_tag_type(jsonTag["dataType"]);
-    tag.valueDataType = parse_tag_type(jsonTag["valueDataType"]); 
-    tag.multiplier = jsonTag["multiplier"] | 1.0f;
-    tag.offset = jsonTag["offset"] | 0.0f;
     tag.nxtComponent = jsonTag["nxtComponent"].isNull() ? NULL : strdup(jsonTag["nxtComponent"]);
-
-    // Parse Bool Map
-    if (jsonTag.containsKey("boolMap") && !jsonTag["boolMap"].isNull()) {
-      JsonObject bm = jsonTag["boolMap"];
-      bool_map_t* bMap = (bool_map_t*)malloc(sizeof(bool_map_t));
-      bMap->falseVal = strdup(bm["falseVal"] | "OFF");
-      bMap->trueVal = strdup(bm["trueVal"] | "ON");
-      tag.boolMap = bMap;
-    }
-
-    // Parse Enum Map
-    if (jsonTag.containsKey("enumMap") && !jsonTag["enumMap"].isNull()) {
-      JsonArray em = jsonTag["enumMap"];
-      tag.enumMapSize = em.size();
-      enum_map_t* eMap = (enum_map_t*)malloc(sizeof(enum_map_t) * tag.enumMapSize);
-      for (uint16_t i = 0; i < tag.enumMapSize; i++) {
-        eMap[i].value = em[i]["val"];
-        eMap[i].name = strdup(em[i]["name"] | "");
-      }
-      tag.enumMap = eMap;
-    }
 
     // Parse Modbus Config
     if (jsonTag.containsKey("modbus")) {
@@ -234,3 +214,4 @@ const modbus_config_t* config_get_modbus(void) { return &gModbusConfig; }
 const acquisition_config_t* config_get_acq(void) { return &gAcqConfig; }
 const publisher_config_t* config_get_publisher(void) { return &gPubConfig; }
 const nextion_config_t* config_get_nextion(void) { return &gNxtConfig; }
+const portal_config_t* config_get_portal(void) { return &gPortalConfig; }
