@@ -3,752 +3,1047 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gateway Setup Portal</title>
+  <title>Xpredict Gateway — Configuration</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
     :root {
-      --bg-primary: #0a0e1a;
-      --bg-card: rgba(15, 20, 40, 0.85);
-      --bg-input: rgba(25, 32, 60, 0.9);
-      --border: rgba(80, 100, 160, 0.25);
-      --border-focus: #6c8cff;
-      --border-error: #ff4d6a;
-      --text-primary: #e8ecf4;
-      --text-secondary: #8892a8;
-      --text-label: #a0aac0;
-      --accent: #6c8cff;
-      --accent-hover: #8ba4ff;
-      --accent-glow: rgba(108, 140, 255, 0.25);
-      --success: #34d399;
-      --error: #ff4d6a;
-      --error-bg: rgba(255, 77, 106, 0.08);
-      --warning: #fbbf24;
-      --tab-active: #6c8cff;
-      --tab-inactive: rgba(80, 100, 160, 0.3);
-      --toggle-on: #6c8cff;
-      --toggle-off: rgba(80, 100, 160, 0.4);
-      --radius: 12px;
-      --radius-sm: 8px;
+      --bg-body: #101318;
+      --bg-sidebar: #161b22;
+      --bg-main: #0d1117;
+      --bg-card: #161b22;
+      --bg-input: #0d1117;
+      --bg-hover: #1c2128;
+      --border: #30363d;
+      --border-light: #21262d;
+      --border-focus: #388bfd;
+      --border-error: #f85149;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --text-label: #c9d1d9;
+      --accent: #388bfd;
+      --accent-hover: #58a6ff;
+      --accent-muted: rgba(56,139,253,0.15);
+      --success: #3fb950;
+      --success-muted: rgba(63,185,80,0.15);
+      --error: #f85149;
+      --error-muted: rgba(248,81,73,0.15);
+      --warning: #d29922;
+      --warning-muted: rgba(210,153,34,0.15);
+      --radius: 6px;
+      --sidebar-w: 220px;
+      --topbar-h: 48px;
     }
+
+    html { font-size: 14px; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-primary);
-      background-image:
-        radial-gradient(ellipse at 20% 50%, rgba(108, 140, 255, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-body);
       color: var(--text-primary);
       min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
-
-    .portal {
-      width: 100%;
-      max-width: 640px;
-      margin-top: 10px;
-    }
-
-    /* Header */
-    .header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    .header .logo {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
-    .header h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 4px;
-    }
-    .header p {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 4px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 5px;
-      margin-bottom: 20px;
-      overflow-x: auto;
-      backdrop-filter: blur(16px);
-    }
-    .tab {
-      flex: 1;
-      padding: 10px 6px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      background: transparent;
-      border: none;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: all 0.25s ease;
-      white-space: nowrap;
-    }
-    .tab:hover { color: var(--text-primary); background: var(--tab-inactive); }
-    .tab.active {
-      color: #fff;
-      background: var(--tab-active);
-      box-shadow: 0 2px 12px var(--accent-glow);
-    }
-
-    /* Card */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 16px;
-      backdrop-filter: blur(16px);
-    }
-    .card-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .card-title .icon { font-size: 18px; }
-
-    /* Tab Panels */
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    /* Form Groups */
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-    .form-row.single { grid-template-columns: 1fr; }
-    .form-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
     }
-    .form-group label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--text-label);
-    }
-    .form-group label .req {
-      color: var(--error);
-      margin-left: 2px;
-    }
-    .form-group input, .form-group select {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      width: 100%;
-    }
-    .form-group input:focus, .form-group select:focus {
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
-    .form-group input.error, .form-group select.error {
-      border-color: var(--border-error);
-      background: var(--error-bg);
-      box-shadow: 0 0 0 3px rgba(255, 77, 106, 0.1);
-    }
-    .form-group .error-msg {
-      font-size: 11px;
-      color: var(--error);
-      display: none;
-      margin-top: 2px;
-    }
-    .form-group input.error ~ .error-msg,
-    .form-group select.error ~ .error-msg {
-      display: block;
-    }
-    .form-group input::placeholder { color: var(--text-secondary); opacity: 0.5; }
 
-    /* Toggle Switch */
-    .toggle-row {
+    /* ── Top Bar ── */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 0;
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .topbar-brand svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--accent);
+    }
+    .topbar-brand .brand-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.5px;
+    }
+    .topbar-brand .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-left: 8px;
+      padding-left: 8px;
+      border-left: 1px solid var(--border);
+    }
+    .topbar-status {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(63,185,80,0.4);
+    }
+    .status-dot.offline { background: var(--error); box-shadow: 0 0 6px rgba(248,81,73,0.4); }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      padding: 12px 0;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .nav-section {
+      padding: 0 12px;
+      margin-bottom: 4px;
+    }
+    .nav-section-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      padding: 8px 8px 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+    .nav-item.active {
+      color: var(--text-primary);
+      background: var(--accent-muted);
+      border-color: rgba(56,139,253,0.3);
+    }
+    .nav-item svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      flex-shrink: 0;
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .sidebar-footer .fw-info {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      padding: 4px 8px;
+    }
+
+    /* ── Main Content ── */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px;
+      max-height: calc(100vh - var(--topbar-h));
+    }
+
+    .page-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
       border-bottom: 1px solid var(--border);
     }
-    .toggle-row:last-child { border-bottom: none; }
-    .toggle-label {
+    .page-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .page-header p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* ── Panels ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Section Card ── */
+    .section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-secondary);
+    }
+    .section-header svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--text-muted);
+    }
+    .section-body {
+      padding: 20px;
+    }
+
+    /* ── Form Grid ── */
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .field-grid.cols-1 { grid-template-columns: 1fr; }
+    .field-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-secondary);
+    }
+    .field label .req {
+      color: var(--error);
+      margin-left: 2px;
+    }
+    .field input, .field select {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s ease;
+      width: 100%;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--border-focus);
+    }
+    .field input::placeholder {
+      color: var(--text-muted);
+    }
+    .field input.error, .field select.error {
+      border-color: var(--border-error);
+      background: var(--error-muted);
+    }
+    .field .error-msg {
+      font-size: 11px;
+      color: var(--error);
+      display: none;
+    }
+    .field input.error ~ .error-msg,
+    .field select.error ~ .error-msg {
+      display: block;
+    }
+
+    /* ── Password Field ── */
+    .pw-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .pw-wrap input { padding-right: 36px; }
+    .pw-toggle {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s;
+    }
+    .pw-toggle:hover { color: var(--text-primary); }
+    .pw-toggle svg { width: 15px; height: 15px; stroke: currentColor; }
+
+    /* ── Toggle Row ── */
+    .option-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-top: 1px solid var(--border-light);
+    }
+    .option-row:first-child { border-top: none; }
+    .option-info .option-name {
       font-size: 13px;
       font-weight: 500;
       color: var(--text-primary);
     }
-    .toggle-label span {
-      display: block;
+    .option-info .option-desc {
       font-size: 11px;
-      color: var(--text-secondary);
-      font-weight: 400;
+      color: var(--text-muted);
       margin-top: 2px;
     }
-    .toggle {
+    .switch {
       position: relative;
-      width: 44px;
-      height: 24px;
-      cursor: pointer;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
     }
-    .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle .slider {
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .track {
       position: absolute;
       inset: 0;
-      background: var(--toggle-off);
-      border-radius: 24px;
-      transition: background 0.3s ease;
+      background: var(--border);
+      border-radius: 20px;
+      transition: background 0.2s;
+      cursor: pointer;
     }
-    .toggle .slider::before {
+    .switch .track::before {
       content: '';
       position: absolute;
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       left: 3px;
       top: 3px;
       background: #fff;
       border-radius: 50%;
-      transition: transform 0.3s ease;
+      transition: transform 0.2s;
     }
-    .toggle input:checked + .slider { background: var(--toggle-on); }
-    .toggle input:checked + .slider::before { transform: translateX(20px); }
+    .switch input:checked + .track { background: var(--accent); }
+    .switch input:checked + .track::before { transform: translateX(16px); }
 
-    /* File Upload */
-    .upload-zone {
-      border: 2px dashed var(--border);
+    /* ── Options Section ── */
+    .options-group {
+      margin-top: 16px;
+      padding-top: 4px;
+    }
+
+    /* ── Upload Zone ── */
+    .upload-area {
+      border: 1px dashed var(--border);
       border-radius: var(--radius);
-      padding: 28px;
+      padding: 32px 24px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.25s ease;
-      margin-bottom: 14px;
+      transition: all 0.15s;
+      background: var(--bg-input);
     }
-    .upload-zone:hover {
+    .upload-area:hover {
       border-color: var(--accent);
-      background: rgba(108, 140, 255, 0.04);
+      background: var(--accent-muted);
     }
-    .upload-zone.dragover {
+    .upload-area.dragover {
       border-color: var(--accent);
-      background: rgba(108, 140, 255, 0.08);
+      background: var(--accent-muted);
     }
-    .upload-zone .upload-icon { font-size: 32px; margin-bottom: 8px; }
-    .upload-zone .upload-text {
+    .upload-area svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .upload-area .upload-label {
       font-size: 13px;
       color: var(--text-secondary);
     }
-    .upload-zone .upload-text strong { color: var(--accent); }
-    .upload-zone .file-name {
+    .upload-area .upload-label strong {
+      color: var(--accent);
+    }
+    .upload-area .selected-file {
       font-size: 12px;
       color: var(--success);
       margin-top: 8px;
       display: none;
+      font-weight: 500;
     }
-    .upload-zone input[type="file"] { display: none; }
+    .upload-area input[type="file"] { display: none; }
 
-    /* Buttons */
-    .btn-group {
+    /* ── Action Bar ── */
+    .action-bar {
       display: flex;
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
     }
     .btn {
-      flex: 1;
-      padding: 12px 20px;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-family: 'Inter', sans-serif;
+      padding: 9px 18px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      font-family: inherit;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.25s ease;
-      display: flex;
+      transition: all 0.15s;
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
       gap: 6px;
     }
+    .btn svg { width: 14px; height: 14px; stroke: currentColor; }
     .btn-primary {
       background: var(--accent);
       color: #fff;
-      box-shadow: 0 4px 16px var(--accent-glow);
+      border-color: var(--accent);
     }
-    .btn-primary:hover {
-      background: var(--accent-hover);
-      box-shadow: 0 6px 24px var(--accent-glow);
-      transform: translateY(-1px);
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-secondary);
+      border-color: var(--border);
     }
-    .btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .btn-danger {
-      background: rgba(255, 77, 106, 0.12);
+    .btn-outline:hover { color: var(--text-primary); background: var(--bg-hover); }
+    .btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-danger-outline {
+      background: transparent;
       color: var(--error);
-      border: 1px solid rgba(255, 77, 106, 0.25);
+      border-color: rgba(248,81,73,0.4);
     }
-    .btn-danger:hover {
-      background: rgba(255, 77, 106, 0.2);
-    }
-    .btn-secondary {
-      background: var(--tab-inactive);
-      color: var(--text-primary);
-    }
-    .btn-secondary:hover {
-      background: rgba(80, 100, 160, 0.45);
-    }
+    .btn-danger-outline:hover { background: var(--error-muted); }
+    .btn-danger-outline:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* Toast */
+    /* ── Toast ── */
     .toast {
       position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      padding: 12px 24px;
-      border-radius: var(--radius-sm);
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      border-radius: var(--radius);
       font-size: 13px;
       font-weight: 500;
-      z-index: 1000;
-      transition: transform 0.35s ease;
-      backdrop-filter: blur(12px);
+      z-index: 200;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 380px;
+      border: 1px solid transparent;
     }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-    .toast.success {
-      background: rgba(52, 211, 153, 0.15);
-      color: var(--success);
-      border: 1px solid rgba(52, 211, 153, 0.3);
-    }
-    .toast.error {
-      background: rgba(255, 77, 106, 0.15);
-      color: var(--error);
-      border: 1px solid rgba(255, 77, 106, 0.3);
-    }
-    .toast.warning {
-      background: rgba(251, 191, 36, 0.15);
-      color: var(--warning);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast svg { width: 16px; height: 16px; stroke: currentColor; flex-shrink: 0; }
+    .toast.success { background: var(--success-muted); color: var(--success); border-color: rgba(63,185,80,0.3); }
+    .toast.error   { background: var(--error-muted);   color: var(--error);   border-color: rgba(248,81,73,0.3); }
+    .toast.warning  { background: var(--warning-muted); color: var(--warning); border-color: rgba(210,153,34,0.3); }
 
-    /* Responsive */
-    @media (max-width: 480px) {
-      body { padding: 12px; }
-      .form-row { grid-template-columns: 1fr; }
-      .tabs { flex-wrap: nowrap; }
-      .tab { font-size: 11px; padding: 8px 4px; }
+    /* ── Mobile ── */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 4px;
+    }
+    .mobile-menu-btn svg { width: 20px; height: 20px; stroke: currentColor; }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -260px;
+        top: var(--topbar-h);
+        bottom: 0;
+        z-index: 90;
+        transition: left 0.2s ease;
+        width: 240px;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+      }
+      .sidebar.open { left: 0; }
+      .mobile-menu-btn { display: flex; }
+      .main-content { padding: 16px; }
+      .field-grid { grid-template-columns: 1fr; }
+      .field-grid.cols-3 { grid-template-columns: 1fr; }
+      .topbar-brand .brand-sub { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="portal">
-    <!-- Header -->
-    <div class="header">
-      <div class="logo">Xpredict Automation</div>
-      <h1>Gateway Configuration</h1>
-      <p>Configure your IoT gateway settings</p>
-    </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab active" data-tab="wifi">WiFi</button>
-      <button class="tab" data-tab="mqtt">MQTT</button>
-      <button class="tab" data-tab="modbus">Modbus</button>
-      <button class="tab" data-tab="telemetry">Telemetry</button>
-      <button class="tab" data-tab="portal">Portal</button>
-      <button class="tab" data-tab="tags">Tags</button>
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <button class="mobile-menu-btn" id="menu-toggle">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+      <span class="brand-name">XPREDICT GATEWAY</span>
+      <span class="brand-sub">Configuration Portal</span>
     </div>
-
-    <!-- WiFi Tab -->
-    <div class="tab-panel active" id="tab-wifi">
-      <div class="card">
-        <div class="card-title"><span class="icon">📡</span> WiFi Configuration</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>SSID <span class="req">*</span></label>
-            <input type="text" id="wifi-ssid" placeholder="Network name" data-required>
-            <div class="error-msg">SSID is required</div>
-          </div>
-          <div class="form-group">
-            <label>Password <span class="req">*</span></label>
-            <input type="password" id="wifi-password" placeholder="Network password" data-required>
-            <div class="error-msg">Password is required</div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Reconnect Timeout (ms) <span class="req">*</span></label>
-            <input type="number" id="wifi-reconnectTimeoutMs" placeholder="20000" data-required>
-            <div class="error-msg">Timeout is required</div>
-          </div>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-label">Auto Reconnect<span>Automatically reconnect on disconnect</span></div>
-          <label class="toggle"><input type="checkbox" id="wifi-autoReconnect" checked><span class="slider"></span></label>
-        </div>
+    <div class="topbar-status">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        System Online
       </div>
     </div>
+  </header>
 
-    <!-- MQTT Tab -->
-    <div class="tab-panel" id="tab-mqtt">
-      <div class="card">
-        <div class="card-title"><span class="icon">☁️</span> MQTT Configuration</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Broker <span class="req">*</span></label>
-            <input type="text" id="mqtt-broker" placeholder="mqtt.example.com" data-required>
-            <div class="error-msg">Broker is required</div>
-          </div>
-          <div class="form-group">
-            <label>Port <span class="req">*</span></label>
-            <input type="number" id="mqtt-port" placeholder="1883" data-required>
-            <div class="error-msg">Port is required</div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Username <span class="req">*</span></label>
-            <input type="text" id="mqtt-username" placeholder="Username" data-required>
-            <div class="error-msg">Username is required</div>
-          </div>
-          <div class="form-group">
-            <label>Password <span class="req">*</span></label>
-            <input type="password" id="mqtt-password" placeholder="Password" data-required>
-            <div class="error-msg">Password is required</div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Client ID <span class="req">*</span></label>
-            <input type="text" id="mqtt-clientId" placeholder="gateway_01" data-required>
-            <div class="error-msg">Client ID is required</div>
-          </div>
-          <div class="form-group">
-            <label>Keep Alive (s) <span class="req">*</span></label>
-            <input type="number" id="mqtt-keepAlive" placeholder="120" data-required>
-            <div class="error-msg">Keep Alive is required</div>
-          </div>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-label">Secure (TLS)<span>Use encrypted connection</span></div>
-          <label class="toggle"><input type="checkbox" id="mqtt-secure"><span class="slider"></span></label>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-label">Clean Session<span>Start fresh on each connection</span></div>
-          <label class="toggle"><input type="checkbox" id="mqtt-cleanSession"><span class="slider"></span></label>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-label">Auto Reconnect<span>Automatically reconnect on disconnect</span></div>
-          <label class="toggle"><input type="checkbox" id="mqtt-autoReconnect" checked><span class="slider"></span></label>
+  <div class="layout">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="nav-section">
+        <div class="nav-section-title">Network</div>
+        <button class="nav-item active" data-panel="wifi">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+          Wi-Fi
+        </button>
+        <button class="nav-item" data-panel="mqtt">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          MQTT Broker
+        </button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Fieldbus</div>
+        <button class="nav-item" data-panel="modbus">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Modbus RTU
+        </button>
+        <button class="nav-item" data-panel="tags">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+          Tag Registry
+        </button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">System</div>
+        <button class="nav-item" data-panel="telemetry">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Intervals
+        </button>
+        <button class="nav-item" data-panel="nextion">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          HMI Display
+        </button>
+        <button class="nav-item" data-panel="portal">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          Security
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="fw-info">
+          Firmware v2.0.0<br>
+          Xpredict Automation Pvt Ltd
         </div>
       </div>
-    </div>
+    </nav>
 
-    <!-- Modbus Tab -->
-    <div class="tab-panel" id="tab-modbus">
-      <div class="card">
-        <div class="card-title"><span class="icon">🔌</span> Modbus Configuration</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Baudrate <span class="req">*</span></label>
-            <select id="modbus-baudrate" data-required>
-              <option value="">Select baudrate</option>
-              <option value="2400">2400</option>
-              <option value="4800">4800</option>
-              <option value="9600">9600</option>
-              <option value="19200">19200</option>
-              <option value="38400">38400</option>
-              <option value="57600">57600</option>
-              <option value="115200">115200</option>
-            </select>
-            <div class="error-msg">Baudrate is required</div>
-          </div>
-          <div class="form-group">
-            <label>Serial Config <span class="req">*</span></label>
-            <select id="modbus-serialConfig" data-required>
-              <option value="">Select config</option>
-              <option value="SERIAL_8N1">8N1</option>
-              <option value="SERIAL_8N2">8N2</option>
-              <option value="SERIAL_8E1">8E1</option>
-              <option value="SERIAL_8O1">8O1</option>
-            </select>
-            <div class="error-msg">Serial config is required</div>
-          </div>
+    <!-- Main -->
+    <main class="main-content">
+
+      <!-- WiFi -->
+      <div class="panel active" id="panel-wifi">
+        <div class="page-header">
+          <h2>Wi-Fi Station Configuration</h2>
+          <p>Configure the wireless network credentials for upstream connectivity.</p>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>TX Pin <span class="req">*</span></label>
-            <input type="number" id="modbus-txPin" placeholder="17" data-required>
-            <div class="error-msg">TX Pin is required</div>
+        <div class="section">
+          <div class="section-header">
+            <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Connection Parameters
           </div>
-          <div class="form-group">
-            <label>RX Pin <span class="req">*</span></label>
-            <input type="number" id="modbus-rxPin" placeholder="18" data-required>
-            <div class="error-msg">RX Pin is required</div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Timeout (ms) <span class="req">*</span></label>
-            <input type="number" id="modbus-timeoutMs" placeholder="2000" data-required>
-            <div class="error-msg">Timeout is required</div>
+          <div class="section-body">
+            <div class="field-grid">
+              <div class="field">
+                <label>Network SSID <span class="req">*</span></label>
+                <input type="text" id="wifi-ssid" placeholder="Enter network name" data-required>
+                <div class="error-msg">SSID is required</div>
+              </div>
+              <div class="field">
+                <label>WPA2 Password <span class="req">*</span></label>
+                <div class="pw-wrap">
+                  <input type="password" id="wifi-password" placeholder="Enter network key" data-required>
+                  <button type="button" class="pw-toggle" title="Toggle visibility"><svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
+                </div>
+                <div class="error-msg">Password is required</div>
+              </div>
+              <div class="field">
+                <label>Reconnect Timeout (ms) <span class="req">*</span></label>
+                <input type="number" id="wifi-reconnectTimeoutMs" placeholder="20000" data-required>
+                <div class="error-msg">Timeout value is required</div>
+              </div>
+            </div>
+            <div class="options-group">
+              <div class="option-row">
+                <div class="option-info">
+                  <div class="option-name">Auto Reconnect</div>
+                  <div class="option-desc">Automatically reconnect when the link drops</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="wifi-autoReconnect" checked><span class="track"></span></label>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Telemetry Tab -->
-    <div class="tab-panel" id="tab-telemetry">
-      <div class="card">
-        <div class="card-title"><span class="icon">📊</span> Telemetry Intervals</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Scan Interval (ms) <span class="req">*</span></label>
-            <input type="number" id="acquisition-scanIntervalMs" placeholder="10000" data-required>
-            <div class="error-msg">Scan interval is required</div>
+      <!-- MQTT -->
+      <div class="panel" id="panel-mqtt">
+        <div class="page-header">
+          <h2>MQTT Broker Configuration</h2>
+          <p>Configure the MQTT v3.1.1 broker connection and session parameters.</p>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+            Broker Endpoint
           </div>
-          <div class="form-group">
-            <label>Publish Interval (ms) <span class="req">*</span></label>
-            <input type="number" id="publisher-publishIntervalMs" placeholder="20000" data-required>
-            <div class="error-msg">Publish interval is required</div>
+          <div class="section-body">
+            <div class="field-grid">
+              <div class="field">
+                <label>Broker Address <span class="req">*</span></label>
+                <input type="text" id="mqtt-broker" placeholder="mqtt.example.com" data-required>
+                <div class="error-msg">Broker address is required</div>
+              </div>
+              <div class="field">
+                <label>Port <span class="req">*</span></label>
+                <input type="number" id="mqtt-port" placeholder="1883" data-required>
+                <div class="error-msg">Port is required</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            Authentication
+          </div>
+          <div class="section-body">
+            <div class="field-grid">
+              <div class="field">
+                <label>Username <span class="req">*</span></label>
+                <input type="text" id="mqtt-username" placeholder="Broker username" data-required>
+                <div class="error-msg">Username is required</div>
+              </div>
+              <div class="field">
+                <label>Password <span class="req">*</span></label>
+                <div class="pw-wrap">
+                  <input type="password" id="mqtt-password" placeholder="Broker password" data-required>
+                  <button type="button" class="pw-toggle" title="Toggle visibility"><svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
+                </div>
+                <div class="error-msg">Password is required</div>
+              </div>
+              <div class="field">
+                <label>Client Identifier <span class="req">*</span></label>
+                <input type="text" id="mqtt-clientId" placeholder="XP-GATEWAY-01" data-required>
+                <div class="error-msg">Client ID is required</div>
+              </div>
+              <div class="field">
+                <label>Keep Alive (seconds) <span class="req">*</span></label>
+                <input type="number" id="mqtt-keepAlive" placeholder="120" data-required>
+                <div class="error-msg">Keep alive is required</div>
+              </div>
+            </div>
+            <div class="options-group">
+              <div class="option-row">
+                <div class="option-info">
+                  <div class="option-name">TLS / SSL</div>
+                  <div class="option-desc">Encrypt transport with TLS</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="mqtt-secure"><span class="track"></span></label>
+              </div>
+              <div class="option-row">
+                <div class="option-info">
+                  <div class="option-name">Clean Session</div>
+                  <div class="option-desc">Discard pending state on connect</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="mqtt-cleanSession"><span class="track"></span></label>
+              </div>
+              <div class="option-row">
+                <div class="option-info">
+                  <div class="option-name">Auto Reconnect</div>
+                  <div class="option-desc">Re-establish connection on broker disconnect</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="mqtt-autoReconnect" checked><span class="track"></span></label>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title"><span class="icon">🖥️</span> Nextion Display</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>RX Pin <span class="req">*</span></label>
-            <input type="number" id="nextion-rxPin" placeholder="1" data-required>
-            <div class="error-msg">RX Pin is required</div>
-          </div>
-          <div class="form-group">
-            <label>TX Pin <span class="req">*</span></label>
-            <input type="number" id="nextion-txPin" placeholder="2" data-required>
-            <div class="error-msg">TX Pin is required</div>
-          </div>
+
+      <!-- Modbus -->
+      <div class="panel" id="panel-modbus">
+        <div class="page-header">
+          <h2>Modbus RTU Configuration</h2>
+          <p>Configure the RS-485 serial bus parameters for Modbus RTU communication.</p>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Baudrate <span class="req">*</span></label>
-            <select id="nextion-baudrate" data-required>
-              <option value="">Select baudrate</option>
-              <option value="2400">2400</option>
-              <option value="4800">4800</option>
-              <option value="9600">9600</option>
-              <option value="19200">19200</option>
-              <option value="38400">38400</option>
-              <option value="57600">57600</option>
-              <option value="115200">115200</option>
-            </select>
-            <div class="error-msg">Baudrate is required</div>
+        <div class="section">
+          <div class="section-header">
+            <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Serial Interface
           </div>
-          <div class="form-group">
-            <label>Update Interval (ms) <span class="req">*</span></label>
-            <input type="number" id="nextion-updateIntervalMs" placeholder="2000" data-required>
-            <div class="error-msg">Update interval is required</div>
+          <div class="section-body">
+            <div class="field-grid">
+              <div class="field">
+                <label>Baud Rate <span class="req">*</span></label>
+                <select id="modbus-baudrate" data-required>
+                  <option value="">Select baud rate</option>
+                  <option value="2400">2400</option>
+                  <option value="4800">4800</option>
+                  <option value="9600">9600</option>
+                  <option value="19200">19200</option>
+                  <option value="38400">38400</option>
+                  <option value="57600">57600</option>
+                  <option value="115200">115200</option>
+                </select>
+                <div class="error-msg">Baud rate is required</div>
+              </div>
+              <div class="field">
+                <label>Frame Format <span class="req">*</span></label>
+                <select id="modbus-serialConfig" data-required>
+                  <option value="">Select format</option>
+                  <option value="SERIAL_8N1">8N1 — 8 Data, No Parity, 1 Stop</option>
+                  <option value="SERIAL_8N2">8N2 — 8 Data, No Parity, 2 Stop</option>
+                  <option value="SERIAL_8E1">8E1 — 8 Data, Even Parity, 1 Stop</option>
+                  <option value="SERIAL_8O1">8O1 — 8 Data, Odd Parity, 1 Stop</option>
+                </select>
+                <div class="error-msg">Frame format is required</div>
+              </div>
+              <div class="field">
+                <label>TX GPIO Pin <span class="req">*</span></label>
+                <input type="number" id="modbus-txPin" placeholder="17" data-required>
+                <div class="error-msg">TX pin is required</div>
+              </div>
+              <div class="field">
+                <label>RX GPIO Pin <span class="req">*</span></label>
+                <input type="number" id="modbus-rxPin" placeholder="18" data-required>
+                <div class="error-msg">RX pin is required</div>
+              </div>
+              <div class="field">
+                <label>Response Timeout (ms) <span class="req">*</span></label>
+                <input type="number" id="modbus-timeoutMs" placeholder="2000" data-required>
+                <div class="error-msg">Timeout is required</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Portal Tab -->
-    <div class="tab-panel" id="tab-portal">
-      <div class="card">
-        <div class="card-title"><span class="icon">🔒</span> Portal Authentication</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Username <span class="req">*</span></label>
-            <input type="text" id="portal-username" placeholder="admin" data-required>
-            <div class="error-msg">Username is required</div>
+      <!-- Tags -->
+      <div class="panel" id="panel-tags">
+        <div class="page-header">
+          <h2>Tag Registry</h2>
+          <p>Upload the tag configuration file defining Modbus register mappings.</p>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            File Upload
           </div>
-          <div class="form-group">
-            <label>Password <span class="req">*</span></label>
-            <input type="password" id="portal-password" placeholder="Enter password" data-required>
-            <div class="error-msg">Password is required</div>
+          <div class="section-body">
+            <div class="upload-area" id="upload-zone">
+              <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+              <div class="upload-label">Drag and drop <strong>tag_config.json</strong> here, or click to browse</div>
+              <div class="selected-file" id="file-name"></div>
+              <input type="file" id="file-input" accept=".json">
+            </div>
+            <div style="margin-top:12px">
+              <button class="btn btn-outline" id="btn-upload-tags">
+                <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                Upload Tag Registry
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tags Tab -->
-    <div class="tab-panel" id="tab-tags">
-      <div class="card">
-        <div class="card-title"><span class="icon">🏷️</span> Tag Configuration Upload</div>
-        <div class="upload-zone" id="upload-zone">
-          <div class="upload-icon">📁</div>
-          <div class="upload-text">Drag &amp; drop <strong>tag_config.json</strong> here or click to browse</div>
-          <div class="file-name" id="file-name"></div>
-          <input type="file" id="file-input" accept=".json">
+      <!-- Telemetry -->
+      <div class="panel" id="panel-telemetry">
+        <div class="page-header">
+          <h2>Acquisition &amp; Publish Intervals</h2>
+          <p>Configure the timing intervals for Modbus data acquisition and MQTT telemetry publishing.</p>
         </div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" id="btn-upload-tags">⬆️ Upload Tags</button>
+        <div class="section">
+          <div class="section-header">
+            <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Timing Configuration
+          </div>
+          <div class="section-body">
+            <div class="field-grid">
+              <div class="field">
+                <label>Modbus Scan Interval (ms) <span class="req">*</span></label>
+                <input type="number" id="acquisition-scanIntervalMs" placeholder="10000" data-required>
+                <div class="error-msg">Scan interval is required</div>
+              </div>
+              <div class="field">
+                <label>MQTT Publish Interval (ms) <span class="req">*</span></label>
+                <input type="number" id="publisher-publishIntervalMs" placeholder="20000" data-required>
+                <div class="error-msg">Publish interval is required</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Action Buttons (Always visible) -->
-    <div class="btn-group">
-      <button class="btn btn-primary" id="btn-save">💾 Save Settings</button>
-      <button class="btn btn-danger" id="btn-reboot">🔄 Reboot</button>
-    </div>
+      <!-- Nextion -->
+      <div class="panel" id="panel-nextion">
+        <div class="page-header">
+          <h2>HMI Display Configuration</h2>
+          <p>Configure the Nextion serial HMI display driver parameters.</p>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Serial Interface
+          </div>
+          <div class="section-body">
+            <div class="field-grid">
+              <div class="field">
+                <label>RX GPIO Pin <span class="req">*</span></label>
+                <input type="number" id="nextion-rxPin" placeholder="1" data-required>
+                <div class="error-msg">RX pin is required</div>
+              </div>
+              <div class="field">
+                <label>TX GPIO Pin <span class="req">*</span></label>
+                <input type="number" id="nextion-txPin" placeholder="2" data-required>
+                <div class="error-msg">TX pin is required</div>
+              </div>
+              <div class="field">
+                <label>Baud Rate <span class="req">*</span></label>
+                <select id="nextion-baudrate" data-required>
+                  <option value="">Select baud rate</option>
+                  <option value="2400">2400</option>
+                  <option value="4800">4800</option>
+                  <option value="9600">9600</option>
+                  <option value="19200">19200</option>
+                  <option value="38400">38400</option>
+                  <option value="57600">57600</option>
+                  <option value="115200">115200</option>
+                </select>
+                <div class="error-msg">Baud rate is required</div>
+              </div>
+              <div class="field">
+                <label>Update Interval (ms) <span class="req">*</span></label>
+                <input type="number" id="nextion-updateIntervalMs" placeholder="2000" data-required>
+                <div class="error-msg">Update interval is required</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Portal / Security -->
+      <div class="panel" id="panel-portal">
+        <div class="page-header">
+          <h2>Portal Security</h2>
+          <p>Configure the HTTP Basic Authentication credentials for this configuration portal.</p>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            Admin Credentials
+          </div>
+          <div class="section-body">
+            <div class="field-grid">
+              <div class="field">
+                <label>Username <span class="req">*</span></label>
+                <input type="text" id="portal-username" placeholder="admin" data-required>
+                <div class="error-msg">Username is required</div>
+              </div>
+              <div class="field">
+                <label>Password <span class="req">*</span></label>
+                <div class="pw-wrap">
+                  <input type="password" id="portal-password" placeholder="Enter password" data-required>
+                  <button type="button" class="pw-toggle" title="Toggle visibility"><svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
+                </div>
+                <div class="error-msg">Password is required</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Global Actions -->
+      <div class="action-bar">
+        <button class="btn btn-primary" id="btn-save">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Save Configuration
+        </button>
+        <button class="btn btn-danger-outline" id="btn-reboot">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Reboot Gateway
+        </button>
+      </div>
+    </main>
   </div>
 
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
   <script>
-    // ── Tab Switching ──
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    const eyeOpen = `<svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`;
+    const eyeOff = `<svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908A10.025 10.025 0 0113 3.22c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21M3 3l18 18"/></svg>`;
+
+    /* ── Navigation ── */
+    const navItems = document.querySelectorAll('.nav-item');
+    const panels = document.querySelectorAll('.panel');
+    const sidebar = document.getElementById('sidebar');
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        navItems.forEach(n => n.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        item.classList.add('active');
+        document.getElementById('panel-' + item.dataset.panel).classList.add('active');
+        if (window.innerWidth <= 768) sidebar.classList.remove('open');
       });
     });
 
-    // ── Toast ──
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    /* ── Password Toggle ── */
+    document.querySelectorAll('.pw-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = btn.previousElementSibling;
+        if (input.type === 'password') { input.type = 'text'; btn.innerHTML = eyeOff; }
+        else { input.type = 'password'; btn.innerHTML = eyeOpen; }
+      });
+    });
+
+    /* ── Toast ── */
     function showToast(msg, type) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.className = 'toast ' + type + ' show';
-      setTimeout(() => toast.classList.remove('show'), 3000);
+      const t = document.getElementById('toast');
+      const icons = {
+        success: `<svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`,
+        error: `<svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+        warning: `<svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`
+      };
+      t.innerHTML = (icons[type] || '') + msg;
+      t.className = 'toast ' + type + ' show';
+      setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    // ── Validation ──
-    function clearErrors() {
-      document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
-    }
+    /* ── Validation ── */
+    function clearErrors() { document.querySelectorAll('.error').forEach(el => el.classList.remove('error')); }
 
     function validateAll() {
       clearErrors();
-      let valid = true;
-      let firstErrorTab = null;
-
-      document.querySelectorAll('[data-required]').forEach(field => {
-        const val = field.value.trim();
-        if (val === '') {
-          field.classList.add('error');
+      let valid = true, firstPanel = null;
+      document.querySelectorAll('[data-required]').forEach(f => {
+        if (f.value.trim() === '') {
+          f.classList.add('error');
           valid = false;
-          if (!firstErrorTab) {
-            const panel = field.closest('.tab-panel');
-            if (panel) firstErrorTab = panel.id.replace('tab-', '');
+          if (!firstPanel) {
+            const p = f.closest('.panel');
+            if (p) firstPanel = p.id.replace('panel-', '');
           }
         }
       });
-
-      if (!valid && firstErrorTab) {
-        // Switch to the tab with the first error
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        const targetTab = document.querySelector('.tab[data-tab="' + firstErrorTab + '"]');
-        if (targetTab) targetTab.classList.add('active');
-        document.getElementById('tab-' + firstErrorTab).classList.add('active');
-        showToast('Please fill in all required fields', 'warning');
+      if (!valid && firstPanel) {
+        navItems.forEach(n => n.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        const target = document.querySelector('.nav-item[data-panel="' + firstPanel + '"]');
+        if (target) target.classList.add('active');
+        document.getElementById('panel-' + firstPanel).classList.add('active');
+        showToast('Please complete all required fields before saving', 'warning');
       }
-
       return valid;
     }
 
-    // Clear error on field input
-    document.querySelectorAll('[data-required]').forEach(field => {
-      field.addEventListener('input', () => field.classList.remove('error'));
-      field.addEventListener('change', () => field.classList.remove('error'));
+    document.querySelectorAll('[data-required]').forEach(f => {
+      f.addEventListener('input', () => f.classList.remove('error'));
+      f.addEventListener('change', () => f.classList.remove('error'));
     });
 
-    // ── Load Config ──
+    /* ── Load Config ── */
     async function loadConfig() {
       try {
         const res = await fetch('/api/config');
-        if (!res.ok) throw new Error('Failed to load');
-        const cfg = await res.json();
+        if (!res.ok) throw new Error();
+        const c = await res.json();
 
-        // WiFi
-        if (cfg.wifi) {
-          document.getElementById('wifi-ssid').value = cfg.wifi.ssid || '';
-          document.getElementById('wifi-password').value = cfg.wifi.password || '';
-          document.getElementById('wifi-autoReconnect').checked = cfg.wifi.autoReconnect !== false;
-          document.getElementById('wifi-reconnectTimeoutMs').value = cfg.wifi.reconnectTimeoutMs || '';
+        if (c.wifi) {
+          document.getElementById('wifi-ssid').value = c.wifi.ssid || '';
+          document.getElementById('wifi-password').value = c.wifi.password || '';
+          document.getElementById('wifi-autoReconnect').checked = c.wifi.autoReconnect !== false;
+          document.getElementById('wifi-reconnectTimeoutMs').value = c.wifi.reconnectTimeoutMs || '';
         }
-
-        // MQTT
-        if (cfg.mqtt) {
-          document.getElementById('mqtt-broker').value = cfg.mqtt.broker || '';
-          document.getElementById('mqtt-port').value = cfg.mqtt.port || '';
-          document.getElementById('mqtt-username').value = cfg.mqtt.username || '';
-          document.getElementById('mqtt-password').value = cfg.mqtt.password || '';
-          document.getElementById('mqtt-clientId').value = cfg.mqtt.clientId || '';
-          document.getElementById('mqtt-keepAlive').value = cfg.mqtt.keepAlive || '';
-          document.getElementById('mqtt-secure').checked = cfg.mqtt.secure === true;
-          document.getElementById('mqtt-cleanSession').checked = cfg.mqtt.cleanSession === true;
-          document.getElementById('mqtt-autoReconnect').checked = cfg.mqtt.autoReconnect !== false;
+        if (c.mqtt) {
+          document.getElementById('mqtt-broker').value = c.mqtt.broker || '';
+          document.getElementById('mqtt-port').value = c.mqtt.port || '';
+          document.getElementById('mqtt-username').value = c.mqtt.username || '';
+          document.getElementById('mqtt-password').value = c.mqtt.password || '';
+          document.getElementById('mqtt-clientId').value = c.mqtt.clientId || '';
+          document.getElementById('mqtt-keepAlive').value = c.mqtt.keepAlive || '';
+          document.getElementById('mqtt-secure').checked = c.mqtt.secure === true;
+          document.getElementById('mqtt-cleanSession').checked = c.mqtt.cleanSession === true;
+          document.getElementById('mqtt-autoReconnect').checked = c.mqtt.autoReconnect !== false;
         }
-
-        // Modbus
-        if (cfg.modbus) {
-          document.getElementById('modbus-baudrate').value = cfg.modbus.baudrate || '';
-          document.getElementById('modbus-serialConfig').value = cfg.modbus.serialConfig || '';
-          document.getElementById('modbus-txPin').value = cfg.modbus.txPin || '';
-          document.getElementById('modbus-rxPin').value = cfg.modbus.rxPin || '';
-          document.getElementById('modbus-timeoutMs').value = cfg.modbus.timeoutMs || '';
+        if (c.modbus) {
+          document.getElementById('modbus-baudrate').value = c.modbus.baudrate || '';
+          document.getElementById('modbus-serialConfig').value = c.modbus.serialConfig || '';
+          document.getElementById('modbus-txPin').value = c.modbus.txPin || '';
+          document.getElementById('modbus-rxPin').value = c.modbus.rxPin || '';
+          document.getElementById('modbus-timeoutMs').value = c.modbus.timeoutMs || '';
         }
-
-        // Acquisition
-        if (cfg.acquisition) {
-          document.getElementById('acquisition-scanIntervalMs').value = cfg.acquisition.scanIntervalMs || '';
+        if (c.acquisition) document.getElementById('acquisition-scanIntervalMs').value = c.acquisition.scanIntervalMs || '';
+        if (c.publisher) document.getElementById('publisher-publishIntervalMs').value = c.publisher.publishIntervalMs || '';
+        if (c.nextion) {
+          document.getElementById('nextion-rxPin').value = c.nextion.rxPin || '';
+          document.getElementById('nextion-txPin').value = c.nextion.txPin || '';
+          document.getElementById('nextion-baudrate').value = c.nextion.baudrate || '';
+          document.getElementById('nextion-updateIntervalMs').value = c.nextion.updateIntervalMs || '';
         }
-
-        // Publisher
-        if (cfg.publisher) {
-          document.getElementById('publisher-publishIntervalMs').value = cfg.publisher.publishIntervalMs || '';
+        if (c.portal) {
+          document.getElementById('portal-username').value = c.portal.username || '';
+          document.getElementById('portal-password').value = c.portal.password || '';
         }
-
-        // Nextion
-        if (cfg.nextion) {
-          document.getElementById('nextion-rxPin').value = cfg.nextion.rxPin || '';
-          document.getElementById('nextion-txPin').value = cfg.nextion.txPin || '';
-          document.getElementById('nextion-baudrate').value = cfg.nextion.baudrate || '';
-          document.getElementById('nextion-updateIntervalMs').value = cfg.nextion.updateIntervalMs || '';
-        }
-
-        // Portal
-        if (cfg.portal) {
-          document.getElementById('portal-username').value = cfg.portal.username || '';
-          document.getElementById('portal-password').value = cfg.portal.password || '';
-        }
-
       } catch (e) {
-        showToast('Failed to load configuration', 'error');
+        showToast('Failed to load device configuration', 'error');
       }
     }
 
-    // ── Build Config JSON ──
+    /* ── Build Config ── */
     function buildConfig() {
       return {
         wifi: {
@@ -794,14 +1089,13 @@
       };
     }
 
-    // ── Save Settings ──
+    /* ── Save ── */
     document.getElementById('btn-save').addEventListener('click', async () => {
       if (!validateAll()) return;
-
-      const btn = document.getElementById('btn-save');
-      btn.disabled = true;
-      btn.textContent = '⏳ Saving...';
-
+      const btnS = document.getElementById('btn-save');
+      const btnR = document.getElementById('btn-reboot');
+      btnS.disabled = true; btnR.disabled = true;
+      btnS.innerHTML = `<svg fill="none" viewBox="0 0 24 24" style="animation:spin 1s linear infinite"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Saving...`;
       try {
         const res = await fetch('/api/config', {
           method: 'POST',
@@ -810,77 +1104,78 @@
         });
         const data = await res.json();
         if (res.ok) {
-          showToast('Settings saved! Device rebooting...', 'success');
+          showToast('Configuration saved — gateway rebooting', 'success');
+          btnS.innerHTML = `Rebooting...`;
+          setTimeout(() => window.location.reload(), 4000);
         } else {
           showToast(data.message || 'Save failed', 'error');
-          btn.disabled = false;
-          btn.textContent = '💾 Save Settings';
+          resetSaveBtn();
         }
       } catch (e) {
         showToast('Connection error', 'error');
-        btn.disabled = false;
-        btn.textContent = '💾 Save Settings';
+        resetSaveBtn();
       }
     });
 
-    // ── Reboot ──
+    function resetSaveBtn() {
+      const btnS = document.getElementById('btn-save');
+      const btnR = document.getElementById('btn-reboot');
+      btnS.disabled = false; btnR.disabled = false;
+      btnS.innerHTML = `<svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Save Configuration`;
+    }
+
+    /* ── Reboot ── */
     document.getElementById('btn-reboot').addEventListener('click', async () => {
-      if (!confirm('Are you sure you want to reboot the gateway?')) return;
-      try {
-        await fetch('/api/reboot', { method: 'POST' });
-        showToast('Rebooting device...', 'success');
-      } catch (e) {
-        showToast('Reboot command sent', 'success');
-      }
+      if (!confirm('Reboot the gateway? Active connections will be dropped.')) return;
+      const btnS = document.getElementById('btn-save');
+      const btnR = document.getElementById('btn-reboot');
+      btnS.disabled = true; btnR.disabled = true;
+      btnR.textContent = 'Rebooting...';
+      try { await fetch('/api/reboot', { method: 'POST' }); } catch (e) {}
+      showToast('Reboot command dispatched', 'success');
+      setTimeout(() => window.location.reload(), 4000);
     });
 
-    // ── File Upload ──
+    /* ── File Upload ── */
     const uploadZone = document.getElementById('upload-zone');
     const fileInput = document.getElementById('file-input');
     const fileNameEl = document.getElementById('file-name');
     let selectedFile = null;
 
     uploadZone.addEventListener('click', () => fileInput.click());
-    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
     uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-    uploadZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadZone.classList.remove('dragover');
-      if (e.dataTransfer.files.length > 0) {
-        selectedFile = e.dataTransfer.files[0];
-        fileNameEl.textContent = '✅ ' + selectedFile.name;
-        fileNameEl.style.display = 'block';
-      }
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault(); uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) { selectedFile = e.dataTransfer.files[0]; fileNameEl.textContent = selectedFile.name; fileNameEl.style.display = 'block'; }
     });
     fileInput.addEventListener('change', () => {
-      if (fileInput.files.length > 0) {
-        selectedFile = fileInput.files[0];
-        fileNameEl.textContent = '✅ ' + selectedFile.name;
-        fileNameEl.style.display = 'block';
-      }
+      if (fileInput.files.length) { selectedFile = fileInput.files[0]; fileNameEl.textContent = selectedFile.name; fileNameEl.style.display = 'block'; }
     });
 
     document.getElementById('btn-upload-tags').addEventListener('click', async () => {
-      if (!selectedFile) {
-        showToast('Please select a tag_config.json file first', 'warning');
-        return;
-      }
-      const formData = new FormData();
-      formData.append('file', selectedFile);
+      if (!selectedFile) { showToast('Select a tag_config.json file first', 'warning'); return; }
+      const btn = document.getElementById('btn-upload-tags');
+      btn.disabled = true; btn.textContent = 'Uploading...';
+      const fd = new FormData(); fd.append('file', selectedFile);
       try {
-        const res = await fetch('/api/upload-tags', { method: 'POST', body: formData });
+        const res = await fetch('/api/upload-tags', { method: 'POST', body: fd });
         const data = await res.json();
-        if (res.ok) {
-          showToast('Tag configuration uploaded', 'success');
-        } else {
-          showToast(data.message || 'Upload failed', 'error');
-        }
-      } catch (e) {
-        showToast('Upload connection error', 'error');
+        if (res.ok) { showToast('Tag registry uploaded successfully', 'success'); selectedFile = null; fileInput.value = ''; fileNameEl.style.display = 'none'; }
+        else showToast(data.message || 'Upload failed', 'error');
+      } catch (e) { showToast('Upload connection error', 'error'); }
+      finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> Upload Tag Registry`;
       }
     });
 
-    // ── Init ──
+    /* ── Spin animation ── */
+    const style = document.createElement('style');
+    style.textContent = `@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`;
+    document.head.appendChild(style);
+
+    /* ── Init ── */
     loadConfig();
   </script>
 </body>

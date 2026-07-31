@@ -17,7 +17,7 @@
 #include "nextion_service.h"
 #include "config_service.h"
 
-#define GATEWAY_VERSION "3.0.0"
+#define GATEWAY_VERSION "3.1.0"
 #define MODULE "APP"
 
 /**
