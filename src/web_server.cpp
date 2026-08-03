@@ -3,6 +3,12 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include "logger.h"
+#include "wifi_service.h"
+#include "mqtt_service.h"
+#include "esp_timer.h"
+#include "tag_registry.h"
+#include "publisher.h"
+#include "system_service.h"
 
 #define MODULE "WEB_SERVER"
 #define JSON_BUF_SIZE 2056
@@ -135,7 +141,45 @@ sys_status_t web_server_init(const portal_config_t* cfg) {
     return ret;
   })->addMiddleware(&basicAuth);
 
-  // 6. Captive Portal Redirect rule
+  // 6. GET API: System Health Dashboard
+  server.on("/api/system", HTTP_GET, [](PsychicRequest *request, PsychicResponse *response) {
+    JsonDocument doc;
+    // ── System Overview ──
+    doc["uptime"] = esp_timer_get_time() / 1000000;
+    doc["freeHeap"] = ESP.getFreeHeap();
+    doc["minFreeHeap"] = ESP.getMinFreeHeap();
+    doc["cpuTemp"] = temperatureRead();
+    doc["fwVersion"] = GATEWAY_VERSION;
+    // ── Flash Storage ──
+    doc["flashTotal"] = LittleFS.totalBytes();
+    doc["flashUsed"] = LittleFS.usedBytes();
+    // ── Wi-Fi ──
+    connection_state_t wifiState = wifi_get_connection_state();
+    doc["wifiStatus"] = wifi_is_connected();
+    doc["wifiStateCode"] = (int)wifiState;
+    if (wifiState == WIFI_CONNECTION_STATE_GOT_IP) {
+      doc["ipAddress"] = WiFi.localIP().toString();
+      doc["rssi"] = WiFi.RSSI();
+    } else if (wifiState == WIFI_CONNECTION_STATE_CONNECTED) {
+      doc["ipAddress"] = "Acquiring IP...";
+      doc["rssi"] = WiFi.RSSI();
+    } else {
+      doc["ipAddress"] = "0.0.0.0";
+    }
+    // ── MQTT ──
+    doc["mqttStatus"] = (mqtt_get_state() == MQTT_STATE_RUNNING);
+    // ── Fieldbus ──
+    doc["activeTags"] = tag_count();
+    doc["publisherStatus"] = (publisher_get_state() == PUBLISHER_STATE_RUNNING);
+    String jsonResponse;
+    serializeJson(doc, jsonResponse);
+    response->setCode(200);
+    response->setContentType("application/json");
+    response->setContent(jsonResponse.c_str());
+    return response->send();
+  })->addMiddleware(&basicAuth);
+
+  // 7. Captive Portal Redirect rule
   server.onNotFound([](PsychicRequest *request, PsychicResponse *response) {
     response->setCode(302);
     response->addHeader("Location", "http://192.168.4.1/");

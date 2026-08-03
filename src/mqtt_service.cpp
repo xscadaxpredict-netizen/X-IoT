@@ -86,8 +86,11 @@ static void mqttTask(void *pv){
   mqtt_msg_t msg;
   LOG_INFO(MODULE, "Task started");
   
-  while (true){
-    if(xQueueReceive(gTxQueue, &msg, portMAX_DELAY) != pdPASS) continue;
+  gClient.connect();
+  mqtt_set_state(MQTT_STATE_CONNECTING);
+  
+  while (mqtt_get_state() != MQTT_STATE_STOPPED){
+    if(xQueueReceive(gTxQueue, &msg, pdMS_TO_TICKS(1000)) != pdPASS) continue;
     
     if(mqtt_get_state() != MQTT_STATE_RUNNING){
       LOG_WARN(MODULE, "Not connected to the broker, dropping message");
@@ -101,6 +104,11 @@ static void mqttTask(void *pv){
     }
     LOG_INFO(MODULE, "Publishing at QoS %d, packetId: %d, topic: %s, payload: %s", msg.qos, msgId, msg.topic, msg.payload);
   }
+
+  gClient.disconnect();
+  gTaskHandle = NULL;
+  LOG_INFO(MODULE, "Stopped");
+  vTaskDelete(NULL);
 }
 
 sys_status_t mqtt_init(const mqtt_config_t* cfg){
@@ -195,8 +203,6 @@ sys_status_t mqtt_start(void){
     return SYS_ERR_NO_MEMORY;
   }
 
-  gClient.connect();
-  mqtt_set_state(MQTT_STATE_CONNECTING);
   return SYS_OK;
 }
 
@@ -208,14 +214,7 @@ sys_status_t mqtt_stop(void){
   }
   
   LOG_INFO(MODULE, "Stopping...");
-  if(gTaskHandle != NULL){
-    vTaskDelete(gTaskHandle);
-    gTaskHandle = NULL;
-  }
 
   mqtt_set_state(MQTT_STATE_STOPPED);
-  gClient.disconnect();
-
-  LOG_INFO(MODULE, "Stopped");
   return SYS_OK;
 }

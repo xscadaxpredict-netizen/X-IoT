@@ -197,6 +197,7 @@ sys_status_t config_init(void) {
     return SYS_ERR_FAIL;
   }
 
+  LOG_INFO(MODULE, "Mounted LittleFS filesystem successfully");
   sys_status_t status;
   status = load_system_config();
   if (status != SYS_OK) return status;
@@ -205,6 +206,7 @@ sys_status_t config_init(void) {
   if (status != SYS_OK) return status;
 
   gConfigLoaded = true;
+  
   return SYS_OK;
 }
 

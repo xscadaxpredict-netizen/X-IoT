@@ -3,7 +3,7 @@ import './styles/base.css';
 import './styles/layout.css';
 import './styles/components.css';
 
-import { renderTopbar } from './components/topbar.js';
+import { renderTopbar, initTopbar } from './components/topbar.js';
 import { renderSidebar, initSidebar } from './components/sidebar.js';
 import { showToast } from './components/toast.js';
 import { registerPage, navigate, setConfigData } from './utils/router.js';
@@ -19,15 +19,14 @@ import * as tagsPage from './pages/tags.js';
 import * as intervalsPage from './pages/intervals.js';
 import * as nextionPage from './pages/nextion.js';
 import * as securityPage from './pages/security.js';
-import * as otaPage from './pages/ota.js';
 
-const allPages = [dashboardPage, wifiPage, mqttPage, modbusPage, tagsPage, intervalsPage, nextionPage, securityPage, otaPage];
+const allPages = [dashboardPage, wifiPage, mqttPage, modbusPage, tagsPage, intervalsPage, nextionPage, securityPage];
 
 function init() {
   document.getElementById('topbar').innerHTML = renderTopbar();
   document.getElementById('sidebar').innerHTML = renderSidebar();
   initSidebar();
-
+  initTopbar();
   allPages.forEach(p => registerPage(p.id, p));
 
   // Render ALL panels (hidden by default, shown by router)

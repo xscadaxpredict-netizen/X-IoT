@@ -23,12 +23,8 @@ export function renderSidebar() {
       <button class="nav-item" data-panel="nextion">${icons.monitor} HMI Display</button>
       <button class="nav-item" data-panel="security">${icons.lock} Security</button>
     </div>
-    <div class="nav-section">
-      <div class="nav-section-title">Maintenance</div>
-      <button class="nav-item" data-panel="ota">${icons.download} Firmware Update</button>
-    </div>
     <div class="sidebar-footer">
-      <div class="fw-info">Firmware v2.0.0<br>Xpredict Automation Pvt Ltd</div>
+      <div class="fw-info">Firmware v2.1.0<br>Xpredict Automation Pvt Ltd</div>
     </div>
   `;
 }
