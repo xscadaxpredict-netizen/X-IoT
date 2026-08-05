@@ -9,10 +9,15 @@
 typedef enum{
     MQTT_STATE_DEINITIALIZED = 610,
     MQTT_STATE_INITIALIZED = 611,
-    MQTT_STATE_CONNECTING = 612,
-    MQTT_STATE_RUNNING = 613,
-    MQTT_STATE_STOPPED = 614
+    MQTT_STATE_RUNNING = 612,
+    MQTT_STATE_STOPPED = 613
 } mqtt_state_t;
+
+typedef enum{
+    MQTT_CONN_DISCONNECTED = 620,
+    MQTT_CONN_CONNECTING = 621,
+    MQTT_CONN_CONNECTED = 622
+} mqtt_connection_state_t;
 
 typedef struct{
     const char* broker;
@@ -43,5 +48,6 @@ sys_status_t mqtt_subscribe(const char *topic, uint8_t qos);
 
 // QueueHandle_t mqtt_get_tx_queue(void);
 mqtt_state_t mqtt_get_state(void);
+mqtt_connection_state_t mqtt_get_connection_state(void);
 
 #endif

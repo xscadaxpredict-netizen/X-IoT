@@ -46,9 +46,9 @@ static void subscriberTask(void *pv){
     }
   }
 
-  while(true){
-    if(xQueueReceive(gQueue, &msg, portMAX_DELAY) != pdPASS){
-      LOG_ERROR(MODULE, "Failed to receive the message");
+  while(gState == SUBSCRIBER_STATE_RUNNING){
+    if(xQueueReceive(gQueue, &msg, pdMS_TO_TICKS(1000)) != pdPASS){
+      // LOG_ERROR(MODULE, "Failed to receive the message");
       continue;
     }
 
@@ -144,13 +144,15 @@ sys_status_t subscriber_start(){
   }
 
   LOG_INFO(MODULE, "Starting...");
+  gState = SUBSCRIBER_STATE_RUNNING;
+
   // Hardcoded 4096 / 5 instead of STACK_LARGE / PRIORITY_NORMAL if you prefer
   if(xTaskCreatePinnedToCore(subscriberTask, "subscriber", 4096, NULL, 5, &gTaskHandle, 1) != pdPASS){
     LOG_ERROR(MODULE, "Failed to create task");
+    gState = SUBSCRIBER_STATE_STOPPED;
     return SYS_ERR_NO_MEMORY;
   }
 
-  gState = SUBSCRIBER_STATE_RUNNING;
   return SYS_OK;
 }
 
@@ -161,11 +163,6 @@ sys_status_t subscriber_stop(){
   }
 
   LOG_INFO(MODULE, "Stopping...");
-  if(gTaskHandle != NULL){
-    vTaskDelete(gTaskHandle);
-    gTaskHandle = NULL;
-  }
-
   gState = SUBSCRIBER_STATE_STOPPED;
   LOG_INFO(MODULE, "Stopped");
 

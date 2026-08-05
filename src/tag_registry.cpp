@@ -16,17 +16,6 @@ sys_status_t tag_registry_init(uint16_t capacity) {
       if (gTags[i].unit) free((void*)gTags[i].unit);
       if (gTags[i].topic) free((void*)gTags[i].topic);
       if (gTags[i].nxtComponent) free((void*)gTags[i].nxtComponent);
-      if (gTags[i].boolMap) {
-        if (gTags[i].boolMap->falseVal) free((void*)gTags[i].boolMap->falseVal);
-        if (gTags[i].boolMap->trueVal) free((void*)gTags[i].boolMap->trueVal);
-        free((void*)gTags[i].boolMap);
-      }
-      if (gTags[i].enumMap) {
-        for (uint16_t j = 0; j < gTags[i].enumMapSize; j++) {
-          if (gTags[i].enumMap[j].name) free((void*)gTags[i].enumMap[j].name);
-        }
-        free((void*)gTags[i].enumMap);
-      }
     }
     free(gTags);
     gTags = NULL;

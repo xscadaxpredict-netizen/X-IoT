@@ -30,7 +30,7 @@ static void update_hmi_widget(const tag_runtime_t* tag) {
     }
 
     char buf[64];
-    tag_type_t valType = (tag->config->valueDataType == 0) ? tag->config->dataType : tag->config->valueDataType;
+    tag_type_t valType = (tag->config->dataType == 0) ? tag->config->dataType : tag->config->dataType;
 
     switch (valType) {
         case TAG_BOOL:

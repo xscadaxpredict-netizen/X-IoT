@@ -55,16 +55,6 @@ typedef union {
   tag_gpio_config_t gpio;
 } tag_source_config_t;
 
-typedef struct {
-  const char* falseVal;
-  const char* trueVal;
-} bool_map_t;
-
-typedef struct {
-  int value;
-  const char* name;
-} enum_map_t;
-
 // LEAN TAG CONFIGURATION
 typedef struct {
   uint32_t tagId;
@@ -74,13 +64,7 @@ typedef struct {
   tag_topic_type_t topicType;
   tag_source_t source;
   tag_access_t access;
-  tag_type_t dataType;
-  tag_type_t valueDataType;
-  float multiplier;
-  float offset;     
-  const bool_map_t* boolMap;
-  const enum_map_t* enumMap;
-  uint16_t enumMapSize;  
+  tag_type_t dataType; 
   const char* nxtComponent;  
   tag_source_config_t sourceConfig;
 } tag_config_t;

@@ -217,6 +217,7 @@ void wifiFSTMTask(void *pv){
 void wifiEventHandler(WiFiEvent_t event, WiFiEventInfo_t info){
   wifi_msg_t tx_wifi_msg_buff = {};
   switch(event){
+    // STA Events
     case ARDUINO_EVENT_WIFI_STA_CONNECTED:
       tx_wifi_msg_buff.event = WIFI_EVT_STA_CONNECTED;
       break;

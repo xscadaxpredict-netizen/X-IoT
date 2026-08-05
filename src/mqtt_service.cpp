@@ -15,8 +15,10 @@ static TaskHandle_t gTaskHandle = NULL;
 
 static mqtt_config_t gConfig;
 static mqtt_state_t gState = MQTT_STATE_DEINITIALIZED;
+static mqtt_connection_state_t gConnState = MQTT_CONN_DISCONNECTED;
 
 static portMUX_TYPE gStateMux = portMUX_INITIALIZER_UNLOCKED; 
+static portMUX_TYPE gConnStateMux = portMUX_INITIALIZER_UNLOCKED;
 
 static PsychicMqttClient gClient;
 static char gURI[MAX_URI_LENGTH];
@@ -36,6 +38,22 @@ static void mqtt_set_state(mqtt_state_t newState){
   portENTER_CRITICAL(&gStateMux);
   gState = newState;
   portEXIT_CRITICAL(&gStateMux);
+}
+
+// Thread-safe connection state getter
+mqtt_connection_state_t mqtt_get_connection_state(){
+  mqtt_connection_state_t stateCopy;
+  portENTER_CRITICAL(&gConnStateMux);
+  stateCopy = gConnState;
+  portEXIT_CRITICAL(&gConnStateMux);
+  return stateCopy;
+}
+
+// Thread-safe connection state setter
+static void mqtt_set_connection_state(mqtt_connection_state_t newState){
+  portENTER_CRITICAL(&gConnStateMux);
+  gConnState = newState;
+  portEXIT_CRITICAL(&gConnStateMux);
 }
 
 // QueueHandle_t mqtt_get_tx_queue(){
@@ -87,12 +105,12 @@ static void mqttTask(void *pv){
   LOG_INFO(MODULE, "Task started");
   
   gClient.connect();
-  mqtt_set_state(MQTT_STATE_CONNECTING);
+  mqtt_set_connection_state(MQTT_CONN_CONNECTING);
   
-  while (mqtt_get_state() != MQTT_STATE_STOPPED){
+  while (mqtt_get_state() == MQTT_STATE_RUNNING){
     if(xQueueReceive(gTxQueue, &msg, pdMS_TO_TICKS(1000)) != pdPASS) continue;
     
-    if(mqtt_get_state() != MQTT_STATE_RUNNING){
+    if(mqtt_get_connection_state() != MQTT_CONN_CONNECTED){
       LOG_WARN(MODULE, "Not connected to the broker, dropping message");
       continue;
     }
@@ -106,6 +124,8 @@ static void mqttTask(void *pv){
   }
 
   gClient.disconnect();
+  mqtt_set_connection_state(MQTT_CONN_DISCONNECTED);
+
   gTaskHandle = NULL;
   LOG_INFO(MODULE, "Stopped");
   vTaskDelete(NULL);
@@ -145,7 +165,7 @@ sys_status_t mqtt_init(const mqtt_config_t* cfg){
   .onConnect([](bool sp){
     LOG_INFO(MODULE, "Connected to the broker");
     event_post(APP_EVENTS, APP_EVENT_MQTT_CONNECTED, NULL, 0);
-    mqtt_set_state(MQTT_STATE_RUNNING);
+    mqtt_set_connection_state(MQTT_CONN_CONNECTED);
     mqtt_msg_t statusMsg = {};
 
     strncpy(statusMsg.topic, gStatusTopic, sizeof(statusMsg.topic)-1);
@@ -160,9 +180,14 @@ sys_status_t mqtt_init(const mqtt_config_t* cfg){
     mqtt_publish(&statusMsg);
   })
   .onDisconnect([](bool sp){
-    LOG_INFO(MODULE, "Disconnected from broker, Auto-reconnecting...");
+    LOG_INFO(MODULE, "Disconnected from broker");
     event_post(APP_EVENTS, APP_EVENT_MQTT_DISCONNECTED, NULL, 0);
-    if(mqtt_get_state() != MQTT_STATE_STOPPED) mqtt_set_state(MQTT_STATE_CONNECTING);
+    if(mqtt_get_state() == MQTT_STATE_RUNNING){
+        LOG_INFO(MODULE, "Auto-reconnecting...");
+        mqtt_set_connection_state(MQTT_CONN_CONNECTING);
+    } else {
+        mqtt_set_connection_state(MQTT_CONN_DISCONNECTED);
+    }
   })
   .onPublish([](uint16_t packetId){
     LOG_INFO(MODULE, "Publish acknowledged, packet id: %d", packetId);
@@ -197,9 +222,13 @@ sys_status_t mqtt_start(void){
   }
   
   LOG_INFO(MODULE, "Starting...");
+
+  xQueueReset(gTxQueue);
+  mqtt_set_state(MQTT_STATE_RUNNING);
   
   if(xTaskCreatePinnedToCore(mqttTask, "mqtt_task", 4096, NULL, 5, &gTaskHandle, 1) != pdPASS){
     LOG_ERROR(MODULE, "Failed to create task");
+    mqtt_set_state(MQTT_STATE_STOPPED);
     return SYS_ERR_NO_MEMORY;
   }
 
@@ -207,14 +236,12 @@ sys_status_t mqtt_start(void){
 }
 
 sys_status_t mqtt_stop(void){
-  mqtt_state_t current = mqtt_get_state();
-  if(current != MQTT_STATE_RUNNING && current != MQTT_STATE_CONNECTING){
+  if(mqtt_get_state() != MQTT_STATE_RUNNING){
     LOG_ERROR(MODULE, "invalid state");
     return SYS_ERR_INVALID_STATE;
   }
   
   LOG_INFO(MODULE, "Stopping...");
-
   mqtt_set_state(MQTT_STATE_STOPPED);
   return SYS_OK;
 }

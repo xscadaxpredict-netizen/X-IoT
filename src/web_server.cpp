@@ -167,7 +167,7 @@ sys_status_t web_server_init(const portal_config_t* cfg) {
       doc["ipAddress"] = "0.0.0.0";
     }
     // ── MQTT ──
-    doc["mqttStatus"] = (mqtt_get_state() == MQTT_STATE_RUNNING);
+    doc["mqttStatus"] = (mqtt_get_connection_state() == MQTT_CONN_CONNECTED);
     // ── Fieldbus ──
     doc["activeTags"] = tag_count();
     doc["publisherStatus"] = (publisher_get_state() == PUBLISHER_STATE_RUNNING);
