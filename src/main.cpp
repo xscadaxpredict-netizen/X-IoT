@@ -139,8 +139,8 @@ sys_status_t app_init(){
   status = event_register(APP_EVENTS, ESP_EVENT_ANY_ID, app_event_handler, NULL);
   if(status != SYS_OK) return status;
 
-  status = alert_init(); 
-  if(status != SYS_OK) return status;
+  // status = alert_init(); 
+  // if(status != SYS_OK) return status;
 
   status = tag_runtime_init();
   if(status != SYS_OK) return status;
@@ -179,8 +179,8 @@ sys_status_t app_init(){
 sys_status_t app_start(){
   sys_status_t status;
 
-  status = alert_start();
-  if(status != SYS_OK) return status;
+  // status = alert_start();
+  // if(status != SYS_OK) return status;
   
   status = protocol_dispatcher_start();
   if(status != SYS_OK) return status;

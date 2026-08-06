@@ -116,6 +116,10 @@ static void subscriberTask(void *pv){
     }
     LOG_INFO(MODULE, "Command dispatched directly: %s", tag->name);
   }
+
+  LOG_INFO(MODULE, "Task stopped");
+  gTaskHandle = NULL;
+  vTaskDelete(NULL); 
 }
 
 sys_status_t subscriber_init(){

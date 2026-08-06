@@ -74,8 +74,8 @@ static void acquisition_task(void* pvParameters){
       lastScanTime = now;
     }
 
-    // Wait on the queue for up to 100ms for incoming responses
-    if(xQueueReceive(gAcqResponseQueue, &response, pdMS_TO_TICKS(100)) == pdPASS){
+    // Wait on the queue for up to 500ms for incoming responses
+    if(xQueueReceive(gAcqResponseQueue, &response, pdMS_TO_TICKS(500)) == pdPASS){
       tag_runtime_t* runtime_tag = tag_runtime_get(response.tagId);
       
       if(runtime_tag != NULL){
