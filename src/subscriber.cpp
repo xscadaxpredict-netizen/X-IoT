@@ -168,7 +168,5 @@ sys_status_t subscriber_stop(){
 
   LOG_INFO(MODULE, "Stopping...");
   gState = SUBSCRIBER_STATE_STOPPED;
-  LOG_INFO(MODULE, "Stopped");
-
   return SYS_OK;
 }

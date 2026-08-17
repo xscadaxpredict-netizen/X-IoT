@@ -13,7 +13,7 @@ sys_status_t logger_init(void){
   } 
 
   Serial.begin(115200);
-  while (!Serial) {}
+  // while (!Serial) {}
 
   Serial.println("[INFO] [LOGGER] Initializing...");
   

@@ -123,8 +123,13 @@ sys_status_t web_server_init(const portal_config_t* cfg) {
   tagUploadHandler->onRequest([](PsychicRequest *request, PsychicResponse *response) {
     response->setCode(200);
     response->setContentType("application/json");
-    response->setContent("{\"status\":\"ok\",\"message\":\"Tags saved\"}");
-    return response->send();
+    response->setContent("{\"status\":\"ok\",\"message\":\"Tags saved. Rebooting...\"}");
+    esp_err_t ret = response->send();
+
+    LOG_INFO(MODULE, "Tags saved. Rebooting...");
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    esp_restart();
+    return ret;
   });
 
   server.on("/api/upload-tags", HTTP_POST, tagUploadHandler)->addMiddleware(&basicAuth);

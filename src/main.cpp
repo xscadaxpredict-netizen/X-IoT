@@ -18,7 +18,6 @@
 #include "config_service.h"
 #include "system_service.h"
 
-#define GATEWAY_VERSION "3.1.0"
 #define MODULE "APP"
 
 /**
